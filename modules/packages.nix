@@ -1,0 +1,63 @@
+{ config, pkgs, zen-browser, ... }:
+
+{
+  # Enable Steam
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true;
+    dedicatedServer.openFirewall = true;
+  };
+
+  # Enable gamemode for better gaming performance
+  programs.gamemode.enable = true;
+
+  # Sunshine game streaming server
+  services.sunshine = {
+    enable = true;
+    openFirewall = true;
+    capSysAdmin = true;
+  };
+
+  environment.systemPackages = with pkgs; [
+    # System utilities
+    git
+    gh
+    sbctl
+    rclone
+    htop
+    btop
+
+    # Development
+    claude-code
+    neovim
+    vscodium
+
+    # Browsers
+    brave
+    chromium
+    zen-browser.packages."${pkgs.system}".default
+    firefox
+    # Communication
+    # Discord PWA in browser - native Wayland screen sharing via xdg-desktop-portal-hyprland
+    # No xwaylandvideobridge needed for browser-based Discord
+
+    # Desktop utilities
+    alacritty
+    fuzzel
+    swayidle
+    swaylock
+    mako
+    wiremix
+
+    # Gaming
+    obs-studio
+    lutris
+    prismlauncher
+    mangohud
+    gamemode
+    gamescope
+    protontricks
+    winetricks
+    wine-staging
+  ];
+}

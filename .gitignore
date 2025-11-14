@@ -1,0 +1,10 @@
+# Nix build outputs
+result
+result-*
+
+# Flake lock file (can be committed if you want reproducible builds)
+# Uncomment to ignore it:
+# flake.lock
+
+# Hardware configuration (machine-specific, often not committed)
+# hardware-configuration.nix
