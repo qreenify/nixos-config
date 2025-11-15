@@ -30,18 +30,34 @@ COUNT=$(echo "$WALLPAPERS" | wc -l)
 echo "🎨 Found $COUNT wallpaper(s) for theme '$THEME_NAME'"
 echo ""
 
-# Use fzf with chafa preview for image selection
-# Create a simple preview script that fzf can execute
+# Use fzf with image preview
+# Detect terminal and use the best preview method available
 PREVIEW_SCRIPT="/tmp/fzf-preview-$$.sh"
-cat > "$PREVIEW_SCRIPT" << 'EOF'
+
+# Check if running in Kitty or Ghostty (both support Kitty graphics protocol)
+if [[ "$TERM" == "xterm-kitty" ]] || [[ "$TERM" == "xterm-ghostty" ]] || command -v kitty >/dev/null 2>&1; then
+  # Kitty/Ghostty terminal - use Kitty image protocol for pixel-perfect preview
+  cat > "$PREVIEW_SCRIPT" << 'EOF'
 #!/bin/sh
-chafa --size 60x30 --symbols vhalf "$1" 2>/dev/null || echo "Preview not available"
+if command -v kitty >/dev/null 2>&1; then
+  kitty +kitten icat --clear --transfer-mode=memory --stdin=no --place=80x40@0x0 "$1" 2>/dev/null
+else
+  chafa --size 80x40 --symbols block --colors 256 "$1" 2>/dev/null
+fi
 EOF
+else
+  # Other terminals (Alacritty, etc.) - use chafa for text-based preview
+  cat > "$PREVIEW_SCRIPT" << 'EOF'
+#!/bin/sh
+chafa --size 80x40 --symbols block --colors 256 "$1" 2>/dev/null || echo "Preview not available"
+EOF
+fi
+
 chmod +x "$PREVIEW_SCRIPT"
 
 SELECTED=$(echo "$WALLPAPERS" | fzf \
   --preview "$PREVIEW_SCRIPT {}" \
-  --preview-window=right:60% \
+  --preview-window=right:70% \
   --prompt="Select wallpaper > " \
   --height=100% \
   --header="Theme: $THEME_NAME | Use ↑↓ to navigate, Enter to select, Esc to cancel" \

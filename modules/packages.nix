@@ -58,6 +58,8 @@ services.hardware.openrgb = {
 
     # Desktop utilities
     alacritty
+    kitty  # GPU-accelerated terminal with pixel-perfect image support
+    ghostty  # Modern GPU-accelerated terminal (supports Kitty graphics protocol)
     fuzzel
     swayidle
     swaylock
