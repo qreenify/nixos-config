@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# Vesktop/Vencord theme sync with omarchy
+
+THEME_DIR="$HOME/.config/omarchy/current/theme"
+VESKTOP_QUICKCSS="$HOME/.config/vesktop/settings/quickCss.css"
+
+# Check if Vesktop config exists
+if [[ ! -d "$HOME/.config/vesktop/settings" ]]; then
+  mkdir -p "$HOME/.config/vesktop/settings"
+fi
+
+# Check if theme has vesktop.css
+if [[ -f "$THEME_DIR/vesktop.css" ]]; then
+  cp "$THEME_DIR/vesktop.css" "$VESKTOP_QUICKCSS"
+  echo "Applied Vesktop theme"
+else
+  # Generate basic theme from waybar colors if vesktop.css doesn't exist
+  if [[ -f "$THEME_DIR/waybar.css" ]]; then
+    # Extract colors from waybar.css and create basic Vesktop theme
+    cat > "$VESKTOP_QUICKCSS" << 'EOF'
+/* Auto-generated from omarchy theme */
+:root {
+EOF
+    grep "@define-color" "$THEME_DIR/waybar.css" | while read -r line; do
+      # Convert @define-color to CSS variables
+      color_name=$(echo "$line" | sed -n 's/@define-color \([^ ]*\) \(.*\);/\1/p')
+      color_value=$(echo "$line" | sed -n 's/@define-color \([^ ]*\) \(.*\);/\2/p')
+      echo "  --${color_name}: ${color_value};" >> "$VESKTOP_QUICKCSS"
+    done
+    cat >> "$VESKTOP_QUICKCSS" << 'EOF'
+}
+
+/* Apply to Discord UI */
+.theme-dark {
+  --background-primary: var(--background);
+  --background-secondary: var(--background);
+  --background-tertiary: var(--background);
+  --text-normal: var(--foreground);
+}
+EOF
+    echo "Generated basic Vesktop theme from waybar colors"
+  fi
+fi

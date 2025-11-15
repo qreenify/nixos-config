@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+# NixOS-compatible theme setter with all theming support
+
+if [[ -z $1 && $1 != "CNCLD" ]]; then
+  echo "Usage: omarchy-theme-set <theme-name>"
+  exit 1
+fi
+
+THEMES_DIR="$HOME/.config/omarchy/themes/"
+CURRENT_THEME_DIR="$HOME/.config/omarchy/current/theme"
+
+THEME_NAME=$(echo "$1" | sed -E 's/<[^>]+>//g' | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+THEME_PATH="$THEMES_DIR/$THEME_NAME"
+
+# Check if the theme entered exists
+if [[ ! -d "$THEME_PATH" ]]; then
+  echo "Theme '$THEME_NAME' does not exist in $THEMES_DIR"
+  exit 1
+fi
+
+# Update theme symlinks
+ln -nsf "$THEME_PATH" "$CURRENT_THEME_DIR"
+
+# Restart components to apply new theme
+if pgrep -x waybar >/dev/null; then
+  ~/.script/omarchy-restart-waybar 2>/dev/null
+fi
+
+# Restart walker to pick up theme changes
+if pgrep -x walker >/dev/null; then
+  pkill -x walker 2>/dev/null
+fi
+
+# Reload Hyprland to apply border colors
+hyprctl reload 2>/dev/null
+
+# Reload notifications
+if command -v makoctl >/dev/null 2>&1; then
+  makoctl reload 2>/dev/null
+fi
+
+# Reload btop
+pkill -SIGUSR2 btop 2>/dev/null
+
+# Change terminal colors (Alacritty will auto-reload via import)
+if [[ -f ~/.config/alacritty/alacritty.toml ]]; then
+  touch ~/.config/alacritty/alacritty.toml 2>/dev/null
+fi
+
+# Reload terminal emulators
+killall -SIGUSR1 kitty 2>/dev/null
+killall -SIGUSR2 ghostty 2>/dev/null
+
+# Change browser theme
+~/.script/omarchy-theme-set-browser 2>/dev/null
+
+# Change Vesktop theme
+~/.script/omarchy-theme-set-vesktop 2>/dev/null
+
+echo "✅ Theme switched to: $THEME_NAME"

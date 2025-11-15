@@ -55,17 +55,7 @@ fi
 # Get selected theme
 SELECTED="${THEMES[$((choice-1))]}"
 
-# Confirm
-echo ""
-echo "Selected: $SELECTED"
-read -p "Apply this theme? (y/n): " confirm
-
-if [[ "$confirm" != "y" ]] && [[ "$confirm" != "Y" ]]; then
-    echo "Cancelled."
-    exit 0
-fi
-
-# Apply theme
+# Apply theme immediately
 echo ""
 echo "Applying theme: $SELECTED"
 ~/.local/share/omarchy/bin/omarchy-theme-set "$SELECTED"

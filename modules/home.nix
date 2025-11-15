@@ -18,8 +18,8 @@
       }
     '';
     envFile.text = ''
-      # Add omarchy bin to PATH
-      $env.PATH = ($env.PATH | split row (char esep) | prepend $"($env.HOME)/.local/share/omarchy/bin")
+      # Add custom scripts and omarchy bin to PATH (custom scripts first to override)
+      $env.PATH = ($env.PATH | split row (char esep) | prepend $"($env.HOME)/.script" | prepend $"($env.HOME)/.local/share/omarchy/bin")
     '';
     shellAliases = {
       n = "nvim";
@@ -349,7 +349,7 @@
         bold_italic.family = "JetBrainsMono Nerd Font";
       };
       # Import colors from omarchy theme
-      import = [ "~/.config/omarchy/current/theme/alacritty.toml" ];
+      general.import = [ "~/.config/omarchy/current/theme/alacritty.toml" ];
     };
   };
 

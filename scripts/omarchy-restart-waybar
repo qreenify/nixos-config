@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# NixOS-compatible waybar restart
+
+if pgrep -x waybar >/dev/null; then
+  pkill -x waybar
+  sleep 0.2
+  waybar >/dev/null 2>&1 &
+fi

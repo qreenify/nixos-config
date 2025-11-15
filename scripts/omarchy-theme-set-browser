@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# NixOS-compatible browser theming (without root access)
+
+CHROMIUM_THEME=~/.config/omarchy/current/theme/chromium.theme
+
+if [[ -f $CHROMIUM_THEME ]]; then
+  THEME_RGB_COLOR=$(<$CHROMIUM_THEME)
+  THEME_HEX_COLOR=$(printf '#%02x%02x%02x' ${THEME_RGB_COLOR//,/ })
+else
+  # Use a default, neutral grey if theme doesn't have a color
+  THEME_RGB_COLOR="28,32,39"
+  THEME_HEX_COLOR="#1c2027"
+fi
+
+# Determine light/dark mode
+if [[ -f ~/.config/omarchy/current/theme/light.mode ]]; then
+  COLOR_SCHEME="light"
+else
+  COLOR_SCHEME="dark"
+fi
+
+# Apply to browsers without requiring root
+if command -v chromium >/dev/null 2>&1; then
+  chromium --no-startup-window --set-theme-color="$THEME_RGB_COLOR" 2>/dev/null &
+  chromium --no-startup-window --set-color-scheme="$COLOR_SCHEME" 2>/dev/null &
+fi
+
+if command -v brave >/dev/null 2>&1; then
+  brave --no-startup-window --set-theme-color="$THEME_RGB_COLOR" 2>/dev/null &
+  brave --no-startup-window --set-color-scheme="$COLOR_SCHEME" 2>/dev/null &
+fi
+
+# Wait for background processes
+wait
