@@ -8,3 +8,6 @@ result-*
 
 # Hardware configuration (machine-specific, often not committed)
 # hardware-configuration.nix
+
+# Personal/private PWA desktop files directory
+config/personal-applications/

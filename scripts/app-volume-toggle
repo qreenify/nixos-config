@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Toggle mute for clicked app
+
+# Get click coordinates from Waybar environment (if available)
+# For now, we'll cycle through all apps or use a menu
+
+# List all current apps with audio
+apps=()
+while read -r line; do
+    app=$(echo "$line" | jq -r 'keys[]' 2>/dev/null)
+    [[ -n "$app" ]] && apps+=("$app")
+done < <(/home/qreenify/.config/nixos/scripts/app-volume-monitor)
+
+if [[ ${#apps[@]} -eq 0 ]]; then
+    notify-send "No apps playing audio"
+    exit 0
+fi
+
+# Use fuzzel to select which app to toggle
+selected=$(printf '%s\n' "${apps[@]}" | fuzzel --dmenu --prompt "Toggle mute:")
+
+[[ -z "$selected" ]] && exit 0
+
+# Get stream ID for selected app
+json=$(/home/qreenify/.config/nixos/scripts/app-volume-monitor)
+stream_id=$(echo "$json" | jq -r ".\"$selected\".stream_id // empty")
+
+if [[ -n "$stream_id" ]]; then
+    wpctl set-mute "$stream_id" toggle
+    notify-send "Toggled mute for $selected"
+fi

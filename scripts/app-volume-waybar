@@ -1,0 +1,88 @@
+#!/usr/bin/env bash
+# Waybar app volume with icon images and bottom-to-top fill effect
+
+MONITOR_SCRIPT="${HOME}/.script/app-volume-monitor"
+[[ ! -x "$MONITOR_SCRIPT" ]] && MONITOR_SCRIPT="${HOME}/.config/nixos/scripts/app-volume-monitor"
+
+# Run monitor once and build output
+json=$("$MONITOR_SCRIPT")
+
+text=""
+tooltip=""
+class="app-volumes"
+
+# Check each app - order: YouTube, Twitch, Apple Music, Plex, Jellyfin, Vesktop (left to right)
+for app in youtube twitch apple-music plex jellyfin vesktop; do
+    vol=$(echo "$json" | jq -r ".\"$app\".volume // empty" 2>/dev/null)
+    muted=$(echo "$json" | jq -r ".\"$app\".muted // empty" 2>/dev/null)
+    sid=$(echo "$json" | jq -r ".\"$app\".stream_id // empty" 2>/dev/null)
+
+    [[ -z "$vol" ]] && continue
+
+    # Map to icon path and name
+    case "$app" in
+        youtube)
+            icon_path="/home/qreenify/.local/share/icons/youtube.png"
+            name="YouTube"
+            color="#FF0000"  # YouTube red
+            ;;
+        apple-music)
+            icon_path="/home/qreenify/.local/share/icons/music.png"
+            name="Apple Music"
+            color="#FA243C"  # Apple Music red
+            ;;
+        twitch)
+            icon_path="/home/qreenify/.local/share/icons/twitch.png"
+            name="Twitch"
+            color="#9146FF"  # Twitch purple
+            ;;
+        plex)
+            icon_path="/home/qreenify/.local/share/icons/plex.png"
+            name="Plex"
+            color="#E5A00D"  # Plex orange/yellow
+            ;;
+        jellyfin)
+            icon_path="/home/qreenify/.local/share/icons/jellyfin.png"
+            name="Jellyfin"
+            color="#00A4DC"  # Jellyfin blue
+            ;;
+        vesktop)
+            icon_path="/run/current-system/sw/share/icons/hicolor/32x32/apps/vesktop.png"
+            name="Discord"
+            color="#5865F2"  # Discord blurple
+            ;;
+    esac
+
+    # Create vertical volume bar that "fills" from bottom to top
+    # Using block characters: ▁ ▂ ▃ ▄ ▅ ▆ ▇ █
+    bar=""
+    case $(( vol / 13 )) in  # 8 levels (0-7)
+        0) bar="▁" ;;
+        1) bar="▂" ;;
+        2) bar="▃" ;;
+        3) bar="▄" ;;
+        4) bar="▅" ;;
+        5) bar="▆" ;;
+        6) bar="▇" ;;
+        *) bar="█" ;;
+    esac
+
+    if [[ "$muted" == "true" ]]; then
+        # Muted: show X in app's brand color (no bar)
+        display="<span foreground='$color'>✖</span>"
+        tooltip+="$name: MUTED ($vol%)\n"
+    else
+        # Show bar in app's brand color (clean, no percentage text)
+        display="<span foreground='$color'>$bar</span>"
+        tooltip+="$name: $vol%\n"
+    fi
+
+    text+="$display "
+done
+
+# Output Waybar JSON
+if [[ -n "$text" ]]; then
+    printf '{"text":"%s","tooltip":"%s","class":"%s"}\n' "$text" "$tooltip" "$class"
+else
+    echo '{"text":"","tooltip":"No apps playing","class":"empty"}'
+fi

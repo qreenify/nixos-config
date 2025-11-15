@@ -69,6 +69,13 @@ window#waybar {
     opacity: 1;
     min-width: 18px;
 }
+
+/* App Volume Indicators */
+#custom-app-volumes {
+    padding: 0 10px;
+    font-size: 18px;
+    color: @foreground;
+}
 EOF
 
 echo "Generated waybar style with theme colors"

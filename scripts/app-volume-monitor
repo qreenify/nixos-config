@@ -1,0 +1,115 @@
+#!/usr/bin/env bash
+# Monitor per-application audio volumes for Waybar
+# Detects YouTube, Apple Music, Twitch PWAs and Vesktop
+
+get_app_from_pid() {
+    local pid=$1
+
+    # Get command line args
+    local cmdline=$(ps -p "$pid" -o args= 2>/dev/null)
+    [[ -z "$cmdline" ]] && return
+
+    # Extract user-data-dir if present
+    if [[ "$cmdline" =~ --user-data-dir=([^\ ]+) ]]; then
+        local datadir="${BASH_REMATCH[1]}"
+
+        case "$datadir" in
+            *brave-youtube*)
+                echo "youtube"
+                return
+                ;;
+            *brave-apple-music*)
+                echo "apple-music"
+                return
+                ;;
+            *brave-twitch*)
+                echo "twitch"
+                return
+                ;;
+            *brave-plex*)
+                echo "plex"
+                return
+                ;;
+            *brave-jellyfin*)
+                echo "jellyfin"
+                return
+                ;;
+            */vesktop*)
+                echo "vesktop"
+                return
+                ;;
+        esac
+    fi
+
+    # Fallback: check if it's Vesktop by process name
+    if [[ "$cmdline" == */vesktop* ]] || [[ "$cmdline" == *vesktop* ]]; then
+        echo "vesktop"
+        return
+    fi
+}
+
+get_stream_info() {
+    local stream_id=$1
+    local info=$(wpctl inspect "$stream_id" 2>/dev/null)
+
+    # Only process output streams
+    if ! echo "$info" | grep -q "Stream/Output/Audio"; then
+        return
+    fi
+
+    # Get PID
+    local pid=$(echo "$info" | grep "application.process.id" | head -1 | awk '{print $3}' | tr -d '"')
+    [[ -z "$pid" ]] && return
+
+    # Get app name
+    local app=$(get_app_from_pid "$pid")
+    [[ -z "$app" ]] && return
+
+    # Get volume (format: "Volume: 0.50" or "Volume: 0.50 [MUTED]")
+    local vol_line=$(wpctl get-volume "$stream_id" 2>/dev/null)
+    [[ -z "$vol_line" ]] && return
+
+    local muted=$(echo "$vol_line" | grep -q "MUTED" && echo "true" || echo "false")
+
+    # Convert to percentage (volume is 0.0-1.0, convert to 0-100)
+    local vol_percent=$(echo "$vol_line" | awk '{printf "%.0f", $2 * 100}')
+
+    echo "$app:$stream_id:$vol_percent:$muted"
+}
+
+# Main - run once
+declare -A apps
+
+# Get all streams from wpctl status
+while IFS= read -r line; do
+    # Extract stream ID from lines like "       40. Chromium"
+    stream_id=$(echo "$line" | awk '{print $1}' | tr -d '.')
+    [[ -z "$stream_id" ]] || [[ ! "$stream_id" =~ ^[0-9]+$ ]] && continue
+
+    # Get info for this stream
+    info=$(get_stream_info "$stream_id")
+    [[ -z "$info" ]] && continue
+
+    # Parse info
+    IFS=':' read -r app sid vol muted <<< "$info"
+
+    # Store (only keep latest if multiple streams per app)
+    apps["$app"]="$vol:$muted:$sid"
+done < <(wpctl status | sed -n '/Streams:/,/^$/p' | grep -E "^\s+[0-9]+\.")
+
+# Output JSON for Waybar
+output="{"
+first=true
+
+for app in youtube apple-music twitch plex jellyfin vesktop; do
+    if [[ -n "${apps[$app]}" ]]; then
+        IFS=':' read -r vol muted sid <<< "${apps[$app]}"
+
+        [[ "$first" == false ]] && output+=","
+        output+="\"$app\":{\"volume\":$vol,\"muted\":$muted,\"stream_id\":$sid}"
+        first=false
+    fi
+done
+
+output+="}"
+echo "$output"

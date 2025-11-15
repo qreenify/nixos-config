@@ -13,6 +13,7 @@
     "clock"
   ],
   "modules-right": [
+    "custom/app-volumes",
     "tray"
   ],
 
@@ -90,5 +91,15 @@
     "ignored-players": [],
     "interval": 2,
     "tooltip": false
+  },
+
+  // Per-app volume indicators
+  "custom/app-volumes": {
+    "exec": "~/.config/nixos/scripts/app-volume-waybar",
+    "return-type": "json",
+    "format": "{}",
+    "on-click": "~/.script/app-volume-toggle",
+    "escape": false,
+    "restart-interval": 1
   }
 }
