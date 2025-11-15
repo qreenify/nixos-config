@@ -51,10 +51,11 @@ if command -v makoctl >/dev/null 2>&1; then
   fi
 fi
 
-# 4. Walker - copy theme CSS, clear cache, and kill it
+# 4. Walker - copy theme CSS to proper directory structure, clear cache, and kill it
 if [[ -f "$THEME_PATH/walker.css" ]]; then
-  mkdir -p ~/.config/walker/themes
-  cp "$THEME_PATH/walker.css" ~/.config/walker/themes/default.css
+  # Walker expects themes in: themes/THEME_NAME/style.css
+  mkdir -p ~/.config/walker/themes/default
+  cp "$THEME_PATH/walker.css" ~/.config/walker/themes/default/style.css
   # Clear walker cache to force theme reload
   rm -rf ~/.cache/walker 2>/dev/null
   # Kill any running walker instance
