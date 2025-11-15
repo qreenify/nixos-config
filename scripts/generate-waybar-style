@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Generate complete waybar CSS from theme colors
 
-THEME_CSS="$HOME/.config/omarchy/current/theme/waybar.css"
+THEME_CSS="$HOME/.config/theme-system/current/theme/waybar.css"
 OUTPUT="$HOME/.config/waybar/style.css"
 
 if [[ ! -f "$THEME_CSS" ]]; then

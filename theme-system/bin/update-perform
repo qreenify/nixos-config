@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -e
+
+theme-update-time
+theme-update-keyring
+theme-update-available-reset
+theme-update-system-pkgs
+theme-migrate
+theme-hook post-update
+theme-update-restart

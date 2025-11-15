@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+theme-refresh-config hypr/hypridle.conf
+theme-restart-hypridle

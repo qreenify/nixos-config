@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+theme-refresh-config walker/config.toml
+theme-refresh-config elephant/calc.toml
+theme-refresh-config elephant/desktopapplications.toml
+theme-restart-walker

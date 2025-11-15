@@ -18,16 +18,15 @@
       }
     '';
     envFile.text = ''
-      # Add custom scripts and omarchy bin to PATH (custom scripts first to override)
-      $env.PATH = ($env.PATH | split row (char esep) | prepend $"($env.HOME)/.script" | prepend $"($env.HOME)/.local/share/omarchy/bin")
+      # Add custom scripts and theme-system bin to PATH (custom scripts first to override)
+      $env.PATH = ($env.PATH | split row (char esep) | prepend $"($env.HOME)/.script" | prepend $"($env.HOME)/.local/share/theme-system/bin")
     '';
     shellAliases = {
       n = "nvim";
       rebuild = "~/.config/nixos/rebuild.sh";
       deploy = "~/.config/nixos/deploy.sh";
-      omarchy = "~/.local/share/omarchy/bin/omarchy";
       theme = "~/.script/theme";  # Direct theme switcher with argument support
-      wallpaper = "~/.script/omarchy-wallpaper-select";  # Interactive wallpaper selector
+      wallpaper = "~/.script/theme-wallpaper-select";  # Interactive wallpaper selector
       gdrive-start = "systemctl --user start rclone-gdrive";
       gdrive-stop = "systemctl --user stop rclone-gdrive";
       gdrive-status = "systemctl --user status rclone-gdrive";
@@ -349,7 +348,7 @@
         bold_italic.family = "JetBrainsMono Nerd Font";
       };
       # Import colors from theme file (copied by theme script, not symlinked)
-      # See omarchy-theme-set script - copying works around Alacritty bug #5852
+      # See theme-set script - copying works around Alacritty bug #5852
       general.import = [ "~/.config/alacritty/theme.toml" ];
     };
   };
@@ -396,30 +395,30 @@
     QT_STYLE_OVERRIDE = "adwaita-dark";
   };
 
-  # Add omarchy bin to PATH
+  # Add theme-system bin to PATH
   home.sessionPath = [
-    "$HOME/.local/share/omarchy/bin"
+    "$HOME/.local/share/theme-system/bin"
   ];
 
   # === Scripts Installation ===
   home.file.".script".source = ../scripts;
   home.file.".script".recursive = true;
 
-  # === Omarchy Installation ===
-  home.file.".local/share/omarchy/bin".source = ../omarchy/bin;
-  home.file.".local/share/omarchy/default".source = ../omarchy/default;
-  home.file.".config/walker".source = ../omarchy/config/walker;
+  # === Theme System Installation ===
+  home.file.".local/share/theme-system/bin".source = ../theme-system/bin;
+  home.file.".local/share/theme-system/default".source = ../theme-system/default;
+  home.file.".config/walker".source = ../theme-system/config/walker;
   home.file.".config/walker".recursive = true;  # Make writable so walker can create default theme
-  home.file.".config/elephant".source = ../omarchy/config/elephant;
-  home.file.".config/omarchy/themes" = {
-    source = ../omarchy/themes;
+  home.file.".config/elephant".source = ../theme-system/config/elephant;
+  home.file.".config/theme-system/themes" = {
+    source = ../theme-system/themes;
     recursive = true;
     force = true;  # Allow overwriting existing theme files
   };
 
   # Set base as the default theme
-  home.file.".config/omarchy/current/theme" = {
-    source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/omarchy/themes/base";
+  home.file.".config/theme-system/current/theme" = {
+    source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/theme-system/themes/base";
     force = true;  # Overwrite existing symlink
   };
 
@@ -427,12 +426,12 @@
   home.activation.initAlacrittyTheme = config.lib.dag.entryAfter ["writeBoundary"] ''
     if [ ! -f "$HOME/.config/alacritty/theme.toml" ]; then
       $DRY_RUN_CMD mkdir -p "$HOME/.config/alacritty"
-      $DRY_RUN_CMD cp "$HOME/.config/omarchy/themes/base/alacritty.toml" "$HOME/.config/alacritty/theme.toml" || true
+      $DRY_RUN_CMD cp "$HOME/.config/theme-system/themes/base/alacritty.toml" "$HOME/.config/alacritty/theme.toml" || true
     fi
   '';
 
-  # Omarchy themes are declaratively managed from ~/.config/nixos/omarchy/themes
-  # Theme switching done via "theme" command (omarchy-theme-browser-cli)
+  # Themes are declaratively managed from ~/.config/nixos/theme-system/themes
+  # Theme switching done via "theme" command
 
   # === Font Configuration ===
   fonts.fontconfig.enable = true;
@@ -445,7 +444,7 @@
     font-awesome
 
     # System utilities
-    psmisc  # Provides killall command for omarchy theme scripts
+    psmisc  # Provides killall command for theme scripts
 
     # Niri utilities
     swaybg
@@ -466,7 +465,7 @@
     fzf                # Fuzzy finding
     zoxide             # Smart directory jumping
 
-    # Omarchy theme browser
+    # Theme browser
     (python3.withPackages (ps: with ps; [
       pygobject3
       pycairo
@@ -475,7 +474,7 @@
     gobject-introspection
     glib
 
-    # Omarchy-compatible apps
+    # Theme-compatible apps
     mako              # Notification daemon (themeable)
     swayosd           # OSD for volume/brightness (themeable)
     hyprlock          # Lock screen (themeable)

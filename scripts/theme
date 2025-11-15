@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # Direct theme switcher - accepts theme name as argument or shows menu
 
-THEMES_DIR="$HOME/.config/omarchy/themes"
-CURRENT_LINK="$HOME/.config/omarchy/current/theme"
+THEMES_DIR="$HOME/.config/theme-system/themes"
+CURRENT_LINK="$HOME/.config/theme-system/current/theme"
 
 # If argument provided, apply directly
 if [ -n "$1" ]; then
     if [ -d "$THEMES_DIR/$1" ]; then
-        ~/.script/omarchy-theme-set "$1"
+        ~/.script/theme-set "$1"
         exit 0
     else
         echo "❌ Theme '$1' not found"
@@ -30,7 +30,7 @@ else
     CURRENT="none"
 fi
 
-echo "🎨 Omarchy Theme Switcher"
+echo "🎨 Theme Theme Switcher"
 echo ""
 echo "Current: $CURRENT"
 echo ""
@@ -72,4 +72,4 @@ else
 fi
 
 # Apply theme
-~/.script/omarchy-theme-set "$SELECTED"
+~/.script/theme-set "$SELECTED"

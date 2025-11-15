@@ -71,7 +71,7 @@ services.hardware.openrgb = {
     playerctl  # Media player control for waybar mpris module
     chafa  # Terminal image viewer for wallpaper preview
 
-    # Omarchy dependencies
+    # Theme system dependencies
     xdg-terminal-exec
 
     # Gaming

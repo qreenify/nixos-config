@@ -10,13 +10,13 @@
 
 *Clean, flat module structure. Each file does one thing.*
 
-[Features](#-features) • [Quick Start](#-quick-start) • [Installation](#-installation) • [Themes](#-omarchy-theme-system) • [Documentation](#-documentation)
+[Features](#-features) • [Quick Start](#-quick-start) • [Installation](#-installation) • [Themes](#-theme-system) • [Documentation](#-documentation)
 
 </div>
 
 ## ✨ Features
 
-### 🎨 Omarchy Theme System
+### 🎨 Theme System
 - **13 pre-configured themes** including custom base theme
 - One-command theme switching with live reload
 - Consistent theming across all applications
@@ -96,7 +96,7 @@ cd ~/.config/nixos
 sudo reboot
 ```
 
-## 🎨 Omarchy Theme System
+## 🎨 Theme System
 
 Switch themes instantly with zero configuration:
 
@@ -337,7 +337,7 @@ Contributions are welcome! Here's how you can help:
 
 - **Share screenshots** of your setup
 - **Report issues** or bugs you encounter
-- **Submit themes** for the Omarchy system
+- **Submit themes** for the theme system
 - **Improve documentation**
 - **Share your customizations**
 
@@ -399,7 +399,7 @@ Edit `modules/home.nix` to set your default theme on login.
 - **Hyprland**: Edit `config/hypr/hyprland.conf`
 
 ### Create New Theme
-1. Create directory: `omarchy/themes/my-theme/`
+1. Create directory: `theme-system/themes/my-theme/`
 2. Add theme files (see existing themes for reference)
 3. Run `./rebuild.sh` to deploy
 4. Switch with `theme my-theme`
@@ -425,10 +425,10 @@ which chafa
 
 ```bash
 # Check theme symlink
-readlink ~/.config/omarchy/current/theme
+readlink ~/.config/theme-system/current/theme
 
 # Ensure scripts are in PATH
-echo $PATH | grep omarchy
+echo $PATH | grep theme-system
 
 # Log out and back in after rebuild
 ```
@@ -449,7 +449,7 @@ This configuration is free to use and modify. See [LICENSE](LICENSE) for details
 - [Home Manager](https://github.com/nix-community/home-manager) - Declarative dotfile management
 - [Niri](https://github.com/YaLTeR/niri) - Scrollable-tiling Wayland compositor
 - [Hyprland](https://hyprland.org/) - Dynamic tiling Wayland compositor
-- All the theme creators whose work inspired the Omarchy themes
+- All the theme creators whose work inspired the themes
 
 ---
 

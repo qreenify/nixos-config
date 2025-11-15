@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+# CLI Theme Browser for Theme
+# Simple alternative to GTK version
+
+THEMES_DIR="$HOME/.config/theme-system/themes"
+CURRENT_LINK="$HOME/.config/theme-system/current/theme"
+
+# Check if themes exist
+if [ ! -d "$THEMES_DIR" ]; then
+    echo "❌ Themes directory not found at $THEMES_DIR"
+    echo "Run: theme-setup"
+    exit 1
+fi
+
+# Get current theme
+if [ -L "$CURRENT_LINK" ]; then
+    CURRENT=$(basename "$(readlink "$CURRENT_LINK")")
+else
+    CURRENT="none"
+fi
+
+echo "🎨 Theme Theme Browser"
+echo ""
+echo "Current theme: $CURRENT"
+echo ""
+echo "Available themes:"
+echo ""
+
+# List themes
+THEMES=($(ls -1 "$THEMES_DIR" | sort))
+for i in "${!THEMES[@]}"; do
+    theme="${THEMES[$i]}"
+    if [ "$theme" = "$CURRENT" ]; then
+        echo "  $((i+1)). ● $theme (active)"
+    else
+        echo "  $((i+1)).   $theme"
+    fi
+done
+
+echo ""
+read -p "Select theme number (or q to quit): " choice
+
+# Quit if q
+if [[ "$choice" == "q" ]] || [[ "$choice" == "Q" ]]; then
+    echo "Cancelled."
+    exit 0
+fi
+
+# Validate choice
+if ! [[ "$choice" =~ ^[0-9]+$ ]] || [ "$choice" -lt 1 ] || [ "$choice" -gt "${#THEMES[@]}" ]; then
+    echo "❌ Invalid choice"
+    exit 1
+fi
+
+# Get selected theme
+SELECTED="${THEMES[$((choice-1))]}"
+
+# Apply theme immediately
+echo ""
+echo "Applying theme: $SELECTED"
+~/.local/share/theme-system/bin/theme-set "$SELECTED"
+
+echo ""
+echo "✅ Theme applied: $SELECTED"

@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+theme-refresh-config hypr/hyprsunset.conf
+theme-restart-hyprsunset

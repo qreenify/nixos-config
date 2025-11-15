@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+theme-restart-app swayosd-server

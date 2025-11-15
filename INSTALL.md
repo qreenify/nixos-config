@@ -1,6 +1,6 @@
 # NixOS Installation Guide
 
-This guide will help you set up your complete NixOS configuration on a new machine, including Hyprland, omarchy themes, and all customizations.
+This guide will help you set up your complete NixOS configuration on a new machine, including Hyprland, themes, and all customizations.
 
 ## What's Included
 
@@ -8,7 +8,7 @@ This flake provides a complete NixOS system with:
 
 - **Window Managers**: Niri (scrollable tiling) + Hyprland (dynamic tiling) - choose at login
 - **Display Manager**: Ly (TUI greeter)
-- **Theme System**: Omarchy with 13 pre-configured themes including custom "base" theme
+- **Theme System**: theme system with 13 pre-configured themes including custom "base" theme
 - **Status Bar**: Waybar with per-monitor workspaces, media player, MPRIS support
 - **Terminals**: Alacritty, Kitty, and Ghostty (all with theme integration)
 - **Applications**: Walker launcher, Mako notifications, Vesktop (Discord), Zen Browser
@@ -104,7 +104,7 @@ sudo reboot
 You should now boot into:
 - Ly greeter (TUI login) - choose Niri or Hyprland
 - Your selected compositor with configured multi-monitor setup
-- Omarchy theme system ready to use
+- theme system ready to use
 - All configured applications and tools
 
 ### 6. Post-Install
@@ -117,7 +117,7 @@ After logging in:
 theme
 
 # Or directly set a theme
-~/.local/share/omarchy/bin/omarchy-theme-set base
+theme base
 ```
 
 #### Verify Setup
@@ -181,7 +181,7 @@ sudo nixos-rebuild switch --flake /etc/nixos#nixos
 
 All 13 themes are declaratively managed and work with both compositors. To add a new theme:
 
-1. Create directory in `~/.config/nixos/omarchy/themes/your-theme-name/`
+1. Create directory in `~/.config/nixos/theme-system/themes/your-theme-name/`
 2. Add theme files (walker.css, waybar.css, niri.kdl, hyprland.conf, alacritty.toml, etc.)
 3. Rebuild to deploy: `~/.config/nixos/rebuild.sh`
 4. Select with `theme` command
@@ -215,12 +215,12 @@ All themes support:
 - Waybar is started by Hyprland autostart.sh
 
 ### Theme Not Working
-- Ensure symlink exists: `readlink ~/.config/omarchy/current/theme`
-- Check scripts are in PATH: `echo $PATH | grep omarchy`
+- Ensure symlink exists: `readlink ~/.config/theme-system/current/theme`
+- Check scripts are in PATH: `echo $PATH | grep theme-system`
 - After rebuild, log out and back in for PATH changes
 
-### Omarchy Scripts Not Found
-- Rebuild to deploy scripts to `~/.local/share/omarchy/bin/`
+### Theme Scripts Not Found
+- Rebuild to deploy scripts to `~/.local/share/theme-system/bin/`
 - Log out and log back in (PATH updated by home-manager)
 
 ## Key Keybindings
