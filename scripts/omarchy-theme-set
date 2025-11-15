@@ -28,8 +28,8 @@ ln -nsf "$THEME_PATH" "$CURRENT_THEME_DIR"
 # 1. Waybar - link style and force restart
 mkdir -p ~/.config/waybar
 ln -nsf ~/.config/omarchy/current/theme/waybar.css ~/.config/waybar/style.css
-if pgrep -x waybar >/dev/null; then
-  pkill -9 waybar
+if pgrep waybar >/dev/null; then
+  pkill waybar
   sleep 0.3
   waybar >/dev/null 2>&1 &
   echo "  ✓ Waybar restarted"
@@ -52,8 +52,8 @@ if command -v makoctl >/dev/null 2>&1; then
 fi
 
 # 4. Walker - just kill it, it will restart on next launch with new theme
-if pgrep -x walker >/dev/null; then
-  pkill -x walker >/dev/null 2>&1
+if pgrep walker >/dev/null; then
+  pkill walker >/dev/null 2>&1
   echo "  ✓ Walker will reload on next launch"
 fi
 

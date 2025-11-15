@@ -66,6 +66,7 @@ services.hardware.openrgb = {
     wireplumber
     libnotify
     walker
+    playerctl  # Media player control for waybar mpris module
 
     # Omarchy dependencies
     xdg-terminal-exec

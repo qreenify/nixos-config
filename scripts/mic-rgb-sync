@@ -1,11 +1,15 @@
 #!/usr/bin/env bash
 # Sync RGB lighting with microphone status
-# Red when muted, light blue with green when active
+# Red when muted, cyan when active
 
 set -euo pipefail
 
-# Get mic mute status
-MIC_MUTED=$(pactl get-source-mute @DEFAULT_SOURCE@ 2>/dev/null | grep -q "yes" && echo "1" || echo "0")
+# Get mic mute status using wpctl (works on NixOS)
+if wpctl get-volume @DEFAULT_AUDIO_SOURCE@ 2>/dev/null | grep -q '\[MUTED\]'; then
+    MIC_MUTED="1"
+else
+    MIC_MUTED="0"
+fi
 
 if [ "$MIC_MUTED" = "1" ]; then
     # Muted: Red (GPU device 0 + Motherboard device 2)
