@@ -17,11 +17,11 @@
 }
 
 #list {
-    background-color: transparent;
+    background-color: inherit;
 }
 
 #element {
-    background-color: transparent;
+    background-color: inherit;
     padding: 8px;
 }
 

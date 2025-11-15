@@ -51,10 +51,14 @@ if command -v makoctl >/dev/null 2>&1; then
   fi
 fi
 
-# 4. Walker - just kill it, it will restart on next launch with new theme
-if pgrep walker >/dev/null; then
-  pkill walker >/dev/null 2>&1
-  echo "  ✓ Walker will reload on next launch"
+# 4. Walker - copy theme CSS and kill it
+if [[ -f "$THEME_PATH/walker.css" ]]; then
+  mkdir -p ~/.config/walker/themes
+  cp "$THEME_PATH/walker.css" ~/.config/walker/themes/default.css
+  if pgrep walker >/dev/null; then
+    pkill walker >/dev/null 2>&1
+  fi
+  echo "  ✓ Walker theme applied"
 fi
 
 # 5. Alacritty - copy theme to trigger reload (symlink changes don't trigger reload)
