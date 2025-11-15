@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+# Interactive wallpaper selector with terminal preview
+
+# Detect current theme from symlink, cleaning up any double slashes
+if [[ -n "$1" ]]; then
+  THEME_NAME="$1"
+else
+  THEME_LINK=$(readlink -f ~/.config/omarchy/current/theme)
+  THEME_NAME=$(basename "$THEME_LINK")
+fi
+
+WALLPAPER_DIR="$HOME/.config/omarchy/themes/$THEME_NAME/backgrounds"
+
+if [[ ! -d "$WALLPAPER_DIR" ]]; then
+  echo "❌ No wallpapers found for theme '$THEME_NAME'"
+  echo "   Directory: $WALLPAPER_DIR"
+  exit 1
+fi
+
+# Find all wallpaper images
+WALLPAPERS=$(find "$WALLPAPER_DIR" -type f \( -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" \) 2>/dev/null)
+
+if [[ -z "$WALLPAPERS" ]]; then
+  echo "❌ No wallpaper images found in $WALLPAPER_DIR"
+  exit 1
+fi
+
+# Count wallpapers
+COUNT=$(echo "$WALLPAPERS" | wc -l)
+echo "🎨 Found $COUNT wallpaper(s) for theme '$THEME_NAME'"
+echo ""
+
+# Use fzf with chafa preview for image selection
+# Create a simple preview script that fzf can execute
+PREVIEW_SCRIPT="/tmp/fzf-preview-$$.sh"
+cat > "$PREVIEW_SCRIPT" << 'EOF'
+#!/bin/sh
+chafa --size 60x30 --symbols vhalf "$1" 2>/dev/null || echo "Preview not available"
+EOF
+chmod +x "$PREVIEW_SCRIPT"
+
+SELECTED=$(echo "$WALLPAPERS" | fzf \
+  --preview "$PREVIEW_SCRIPT {}" \
+  --preview-window=right:60% \
+  --prompt="Select wallpaper > " \
+  --height=100% \
+  --header="Theme: $THEME_NAME | Use ↑↓ to navigate, Enter to select, Esc to cancel" \
+)
+
+# Clean up preview script
+rm -f "$PREVIEW_SCRIPT"
+
+if [[ -z "$SELECTED" ]]; then
+  echo "Cancelled."
+  exit 0
+fi
+
+echo "🖼️  Setting wallpaper: $(basename "$SELECTED")"
+
+# Kill existing swaybg instances
+pkill -9 swaybg 2>/dev/null
+sleep 0.2
+
+# Set the selected wallpaper
+swaybg -i "$SELECTED" -m fill >/dev/null 2>&1 &
+
+echo "✅ Wallpaper applied!"

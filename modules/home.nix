@@ -27,6 +27,7 @@
       deploy = "~/.config/nixos/deploy.sh";
       omarchy = "~/.local/share/omarchy/bin/omarchy";
       theme = "~/.script/theme";  # Direct theme switcher with argument support
+      wallpaper = "~/.script/omarchy-wallpaper-select";  # Interactive wallpaper selector
       gdrive-start = "systemctl --user start rclone-gdrive";
       gdrive-stop = "systemctl --user stop rclone-gdrive";
       gdrive-status = "systemctl --user status rclone-gdrive";
@@ -347,10 +348,12 @@
         italic.family = "JetBrainsMono Nerd Font";
         bold_italic.family = "JetBrainsMono Nerd Font";
       };
-      # Import colors from omarchy theme
-      general.import = [ "~/.config/omarchy/current/theme/alacritty.toml" ];
+      # Import colors from theme file (copied by theme script, not symlinked)
+      # See omarchy-theme-set script - copying works around Alacritty bug #5852
+      general.import = [ "~/.config/alacritty/theme.toml" ];
     };
   };
+  # Note: theme.toml is NOT managed by home-manager - it's created/updated by theme script
 
   # === Dark Mode Theme ===
   gtk = {
@@ -419,6 +422,14 @@
     source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/omarchy/themes/base";
     force = true;  # Overwrite existing symlink
   };
+
+  # Initialize Alacritty theme on first install/rebuild
+  home.activation.initAlacrittyTheme = config.lib.dag.entryAfter ["writeBoundary"] ''
+    if [ ! -f "$HOME/.config/alacritty/theme.toml" ]; then
+      $DRY_RUN_CMD mkdir -p "$HOME/.config/alacritty"
+      $DRY_RUN_CMD cp "$HOME/.config/omarchy/themes/base/alacritty.toml" "$HOME/.config/alacritty/theme.toml" || true
+    fi
+  '';
 
   # Omarchy themes are declaratively managed from ~/.config/nixos/omarchy/themes
   # Theme switching done via "theme" command (omarchy-theme-browser-cli)

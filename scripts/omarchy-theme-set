@@ -6,7 +6,7 @@ if [[ -z $1 ]]; then
   exit 1
 fi
 
-THEMES_DIR="$HOME/.config/omarchy/themes/"
+THEMES_DIR="$HOME/.config/omarchy/themes"
 CURRENT_THEME_DIR="$HOME/.config/omarchy/current/theme"
 
 THEME_NAME=$(echo "$1" | sed -E 's/<[^>]+>//g' | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
@@ -57,9 +57,13 @@ if pgrep walker >/dev/null; then
   echo "  ✓ Walker will reload on next launch"
 fi
 
-# 5. Alacritty - touch to trigger reload (imports theme via general.import)
-if [[ -f ~/.config/alacritty/alacritty.toml ]]; then
-  touch ~/.config/alacritty/alacritty.toml 2>/dev/null
+# 5. Alacritty - copy theme to trigger reload (symlink changes don't trigger reload)
+if [[ -f "$THEME_PATH/alacritty.toml" ]]; then
+  # Workaround for Alacritty bug #5852: imported files via symlinks don't reload
+  # Copy theme content to a real file to force reload detection
+  mkdir -p ~/.config/alacritty
+  rm -f ~/.config/alacritty/theme.toml
+  cp "$THEME_PATH/alacritty.toml" ~/.config/alacritty/theme.toml
   echo "  ✓ Alacritty will reload"
 fi
 
@@ -72,18 +76,10 @@ killall -SIGUSR2 ghostty 2>/dev/null && echo "  ✓ Ghostty reloaded"
 # 8. Btop - send reload signal
 pkill -SIGUSR2 btop 2>/dev/null && echo "  ✓ Btop reloaded"
 
-# 9. Browser theming
-if [[ -f "$THEME_PATH/chromium.theme" ]]; then
-  THEME_RGB=$(<"$THEME_PATH/chromium.theme")
-  if command -v chromium >/dev/null 2>&1; then
-    chromium --no-startup-window --set-theme-color="$THEME_RGB" 2>/dev/null &
-  fi
-  if command -v brave >/dev/null 2>&1; then
-    brave --no-startup-window --set-theme-color="$THEME_RGB" 2>/dev/null &
-  fi
-  wait
-  echo "  ✓ Browser theme updated"
-fi
+# 9. Browser theming - DISABLED
+# Note: --set-theme-color requires omarchy-chromium (custom fork)
+# Standard Chromium/Brave don't support this flag
+# Alternative: Use managed policies (requires NixOS config) or browser extensions
 
 # 10. Vesktop/Discord - generate and apply CSS
 VESKTOP_CSS="$HOME/.config/vesktop/settings/quickCss.css"

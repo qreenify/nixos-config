@@ -67,6 +67,7 @@ services.hardware.openrgb = {
     libnotify
     walker
     playerctl  # Media player control for waybar mpris module
+    chafa  # Terminal image viewer for wallpaper preview
 
     # Omarchy dependencies
     xdg-terminal-exec
