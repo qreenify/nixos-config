@@ -18,6 +18,7 @@
   };
 
   outputs = { self, nixpkgs, lanzaboote, home-manager, zen-browser, ... }: {
+    # Main system configuration
     nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       specialArgs = { inherit zen-browser; };
@@ -37,6 +38,30 @@
 
         # Lanzaboote
         lanzaboote.nixosModules.lanzaboote
+
+        # Home Manager
+        home-manager.nixosModules.home-manager
+        {
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          home-manager.users.qreenify = import ./modules/home.nix;
+        }
+      ];
+    };
+
+    # VM configuration for testing
+    nixosConfigurations.nixos-vm = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      specialArgs = { inherit zen-browser; };
+      modules = [
+        # VM base configuration
+        ./vm.nix
+
+        # System modules (excluding hardware-specific ones)
+        ./modules/networking.nix
+        ./modules/locale.nix
+        ./modules/packages.nix
+        ./modules/desktop.nix
 
         # Home Manager
         home-manager.nixosModules.home-manager
