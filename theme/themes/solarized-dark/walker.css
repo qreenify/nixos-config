@@ -1,0 +1,13 @@
+/* Solarized Dark Theme for Walker */
+
+* { color: #839496; }
+#window { background-color: rgba(0, 43, 54, 0.95); }
+#input {
+    background-color: #002b36;
+    color: #839496;
+    border: 2px solid #268bd2;
+    padding: 8px;
+    border-radius: 4px;
+}
+#element { background-color: transparent; padding: 8px; }
+#element:selected { background-color: #002b36; color: #268bd2; }

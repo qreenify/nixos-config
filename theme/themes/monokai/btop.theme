@@ -1,0 +1,13 @@
+# Monokai theme for btop
+
+theme[main_bg]="#272822"
+theme[main_fg]="#f8f8f2"
+theme[title]="#ae81ff"
+theme[hi_fg]="#a1efe4"
+theme[selected_bg]="#75715e"
+theme[selected_fg]="#f8f8f2"
+theme[inactive_fg]="#75715e"
+theme[cpu_box]="#ae81ff"
+theme[mem_box]="#a6e22e"
+theme[net_box]="#ae81ff"
+theme[proc_box]="#f4bf75"

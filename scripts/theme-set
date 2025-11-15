@@ -67,11 +67,21 @@ if [[ -f "$THEME_PATH/alacritty.toml" ]]; then
   echo "  ✓ Alacritty will reload"
 fi
 
-# 6. Kitty - send reload signal
-killall -SIGUSR1 kitty 2>/dev/null && echo "  ✓ Kitty reloaded"
+# 6. Kitty - copy theme config and send reload signal
+if [[ -f "$THEME_PATH/kitty.conf" ]]; then
+  mkdir -p ~/.config/kitty
+  rm -f ~/.config/kitty/current-theme.conf
+  cp "$THEME_PATH/kitty.conf" ~/.config/kitty/current-theme.conf
+  killall -SIGUSR1 kitty 2>/dev/null && echo "  ✓ Kitty reloaded"
+fi
 
-# 7. Ghostty - send reload signal
-killall -SIGUSR2 ghostty 2>/dev/null && echo "  ✓ Ghostty reloaded"
+# 7. Ghostty - copy theme config and send reload signal
+if [[ -f "$THEME_PATH/ghostty.conf" ]]; then
+  mkdir -p ~/.config/ghostty
+  rm -f ~/.config/ghostty/theme.conf
+  cp "$THEME_PATH/ghostty.conf" ~/.config/ghostty/theme.conf
+  killall -SIGUSR2 ghostty 2>/dev/null && echo "  ✓ Ghostty reloaded"
+fi
 
 # 8. Btop - send reload signal
 pkill -SIGUSR2 btop 2>/dev/null && echo "  ✓ Btop reloaded"

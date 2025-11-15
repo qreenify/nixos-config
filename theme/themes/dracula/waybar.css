@@ -1,0 +1,70 @@
+/* Dracula Theme for Waybar */
+
+* {
+    border: none;
+    border-radius: 0;
+    font-family: "JetBrainsMono Nerd Font";
+    font-size: 13px;
+    min-height: 0;
+}
+
+window#waybar {
+    background: #282a36;
+    color: #f8f8f2;
+}
+
+#workspaces button {
+    padding: 0 8px;
+    background: transparent;
+    color: #6272a4;
+    border-bottom: 2px solid transparent;
+}
+
+#workspaces button.active {
+    color: #bd93f9;
+    border-bottom: 2px solid #bd93f9;
+}
+
+#workspaces button.urgent {
+    color: #ff5555;
+}
+
+#workspaces button:hover {
+    background: #44475a;
+    color: #f8f8f2;
+}
+
+#clock,
+#battery,
+#cpu,
+#memory,
+#temperature,
+#network,
+#pulseaudio,
+#tray {
+    padding: 0 10px;
+    background: #44475a;
+    color: #f8f8f2;
+    margin: 3px;
+    border-radius: 4px;
+}
+
+#battery.charging {
+    color: #50fa7b;
+}
+
+#battery.warning:not(.charging) {
+    color: #f1fa8c;
+}
+
+#battery.critical:not(.charging) {
+    color: #ff5555;
+}
+
+#pulseaudio.muted {
+    color: #6272a4;
+}
+
+#network.disconnected {
+    color: #ff5555;
+}

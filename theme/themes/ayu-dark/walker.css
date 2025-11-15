@@ -1,0 +1,13 @@
+/* Ayu Dark Theme for Walker */
+
+* { color: #b3b1ad; }
+#window { background-color: rgba(10, 14, 20, 0.95); }
+#input {
+    background-color: #686868;
+    color: #b3b1ad;
+    border: 2px solid #53bdfa;
+    padding: 8px;
+    border-radius: 4px;
+}
+#element { background-color: transparent; padding: 8px; }
+#element:selected { background-color: #686868; color: #53bdfa; }

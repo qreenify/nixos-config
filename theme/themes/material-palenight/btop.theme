@@ -1,0 +1,13 @@
+# Material Palenight theme for btop
+
+theme[main_bg]="#292d3e"
+theme[main_fg]="#a6accd"
+theme[title]="#82aaff"
+theme[hi_fg]="#89ddff"
+theme[selected_bg]="#434758"
+theme[selected_fg]="#a6accd"
+theme[inactive_fg]="#434758"
+theme[cpu_box]="#82aaff"
+theme[mem_box]="#c3e88d"
+theme[net_box]="#c792ea"
+theme[proc_box]="#ffcb6b"

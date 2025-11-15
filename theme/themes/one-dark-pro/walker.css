@@ -1,0 +1,13 @@
+/* One Dark Pro Theme for Walker */
+
+* { color: #abb2bf; }
+#window { background-color: rgba(40, 44, 52, 0.95); }
+#input {
+    background-color: #5c6370;
+    color: #abb2bf;
+    border: 2px solid #61afef;
+    padding: 8px;
+    border-radius: 4px;
+}
+#element { background-color: transparent; padding: 8px; }
+#element:selected { background-color: #5c6370; color: #61afef; }

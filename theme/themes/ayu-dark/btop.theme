@@ -1,0 +1,13 @@
+# Ayu Dark theme for btop
+
+theme[main_bg]="#0a0e14"
+theme[main_fg]="#b3b1ad"
+theme[title]="#53bdfa"
+theme[hi_fg]="#90e1c6"
+theme[selected_bg]="#686868"
+theme[selected_fg]="#b3b1ad"
+theme[inactive_fg]="#686868"
+theme[cpu_box]="#53bdfa"
+theme[mem_box]="#91b362"
+theme[net_box]="#fae994"
+theme[proc_box]="#f9af4f"

@@ -1,0 +1,42 @@
+/* Solarized Dark Theme for Waybar */
+
+* {
+    border: none;
+    border-radius: 0;
+    font-family: "JetBrainsMono Nerd Font";
+    font-size: 13px;
+    min-height: 0;
+}
+
+window#waybar {
+    background: #002b36;
+    color: #839496;
+}
+
+#workspaces button {
+    padding: 0 8px;
+    background: transparent;
+    color: #002b36;
+    border-bottom: 2px solid transparent;
+}
+
+#workspaces button.active {
+    color: #268bd2;
+    border-bottom: 2px solid #268bd2;
+}
+
+#workspaces button.urgent {
+    color: #dc322f;
+}
+
+#clock, #battery, #cpu, #memory, #network, #pulseaudio, #tray {
+    padding: 0 10px;
+    background: #002b36;
+    color: #839496;
+    margin: 3px;
+    border-radius: 4px;
+}
+
+#battery.charging { color: #859900; }
+#battery.warning:not(.charging) { color: #b58900; }
+#battery.critical:not(.charging) { color: #dc322f; }

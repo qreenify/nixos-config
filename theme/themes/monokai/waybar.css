@@ -1,0 +1,42 @@
+/* Monokai Theme for Waybar */
+
+* {
+    border: none;
+    border-radius: 0;
+    font-family: "JetBrainsMono Nerd Font";
+    font-size: 13px;
+    min-height: 0;
+}
+
+window#waybar {
+    background: #272822;
+    color: #f8f8f2;
+}
+
+#workspaces button {
+    padding: 0 8px;
+    background: transparent;
+    color: #75715e;
+    border-bottom: 2px solid transparent;
+}
+
+#workspaces button.active {
+    color: #ae81ff;
+    border-bottom: 2px solid #ae81ff;
+}
+
+#workspaces button.urgent {
+    color: #f92672;
+}
+
+#clock, #battery, #cpu, #memory, #network, #pulseaudio, #tray {
+    padding: 0 10px;
+    background: #75715e;
+    color: #f8f8f2;
+    margin: 3px;
+    border-radius: 4px;
+}
+
+#battery.charging { color: #a6e22e; }
+#battery.warning:not(.charging) { color: #f4bf75; }
+#battery.critical:not(.charging) { color: #f92672; }

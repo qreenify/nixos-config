@@ -1,0 +1,13 @@
+# Solarized Dark theme for btop
+
+theme[main_bg]="#002b36"
+theme[main_fg]="#839496"
+theme[title]="#268bd2"
+theme[hi_fg]="#2aa198"
+theme[selected_bg]="#002b36"
+theme[selected_fg]="#839496"
+theme[inactive_fg]="#002b36"
+theme[cpu_box]="#268bd2"
+theme[mem_box]="#859900"
+theme[net_box]="#d33682"
+theme[proc_box]="#b58900"

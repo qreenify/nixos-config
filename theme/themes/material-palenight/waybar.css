@@ -1,0 +1,42 @@
+/* Material Palenight Theme for Waybar */
+
+* {
+    border: none;
+    border-radius: 0;
+    font-family: "JetBrainsMono Nerd Font";
+    font-size: 13px;
+    min-height: 0;
+}
+
+window#waybar {
+    background: #292d3e;
+    color: #a6accd;
+}
+
+#workspaces button {
+    padding: 0 8px;
+    background: transparent;
+    color: #434758;
+    border-bottom: 2px solid transparent;
+}
+
+#workspaces button.active {
+    color: #82aaff;
+    border-bottom: 2px solid #82aaff;
+}
+
+#workspaces button.urgent {
+    color: #f07178;
+}
+
+#clock, #battery, #cpu, #memory, #network, #pulseaudio, #tray {
+    padding: 0 10px;
+    background: #434758;
+    color: #a6accd;
+    margin: 3px;
+    border-radius: 4px;
+}
+
+#battery.charging { color: #c3e88d; }
+#battery.warning:not(.charging) { color: #ffcb6b; }
+#battery.critical:not(.charging) { color: #f07178; }

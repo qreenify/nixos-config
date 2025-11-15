@@ -1,0 +1,13 @@
+# One Dark Pro theme for btop
+
+theme[main_bg]="#282c34"
+theme[main_fg]="#abb2bf"
+theme[title]="#61afef"
+theme[hi_fg]="#56b6c2"
+theme[selected_bg]="#5c6370"
+theme[selected_fg]="#abb2bf"
+theme[inactive_fg]="#5c6370"
+theme[cpu_box]="#61afef"
+theme[mem_box]="#98c379"
+theme[net_box]="#c678dd"
+theme[proc_box]="#e5c07b"

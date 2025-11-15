@@ -354,6 +354,44 @@
   };
   # Note: theme.toml is NOT managed by home-manager - it's created/updated by theme script
 
+  # === Kitty Terminal ===
+  programs.kitty = {
+    enable = true;
+    font = {
+      name = "JetBrainsMono Nerd Font";
+      size = 14;
+    };
+    settings = {
+      # Include theme colors (updated by theme script)
+      include = "~/.config/kitty/current-theme.conf";
+      # Basic settings
+      cursor_shape = "block";
+      cursor_blink_interval = 0;
+      scrollback_lines = 10000;
+      enable_audio_bell = false;
+      window_padding_width = 4;
+    };
+  };
+  # Note: current-theme.conf is NOT managed by home-manager - it's updated by theme script
+
+  # === Ghostty Terminal ===
+  xdg.configFile."ghostty/config" = {
+    text = ''
+      # Font
+      font-family = JetBrainsMono Nerd Font
+      font-size = 14
+
+      # Basic settings
+      cursor-style = block
+      mouse-hide-while-typing = true
+
+      # Include theme (updated by theme script)
+      config-file = ~/.config/ghostty/theme.conf
+    '';
+    force = true;  # Allow overwriting if file exists
+  };
+  # Note: theme.conf is NOT managed by home-manager - it's updated by theme script
+
   # === Dark Mode Theme ===
   gtk = {
     enable = true;
@@ -422,11 +460,25 @@
     force = true;  # Overwrite existing symlink
   };
 
-  # Initialize Alacritty theme on first install/rebuild
+  # Initialize terminal themes on first install/rebuild
   home.activation.initAlacrittyTheme = config.lib.dag.entryAfter ["writeBoundary"] ''
     if [ ! -f "$HOME/.config/alacritty/theme.toml" ]; then
       $DRY_RUN_CMD mkdir -p "$HOME/.config/alacritty"
       $DRY_RUN_CMD cp "$HOME/.config/theme/themes/base/alacritty.toml" "$HOME/.config/alacritty/theme.toml" || true
+    fi
+  '';
+
+  home.activation.initKittyTheme = config.lib.dag.entryAfter ["writeBoundary"] ''
+    if [ ! -f "$HOME/.config/kitty/current-theme.conf" ]; then
+      $DRY_RUN_CMD mkdir -p "$HOME/.config/kitty"
+      $DRY_RUN_CMD cp "$HOME/.config/theme/themes/base/kitty.conf" "$HOME/.config/kitty/current-theme.conf" || true
+    fi
+  '';
+
+  home.activation.initGhosttyTheme = config.lib.dag.entryAfter ["writeBoundary"] ''
+    if [ ! -f "$HOME/.config/ghostty/theme.conf" ]; then
+      $DRY_RUN_CMD mkdir -p "$HOME/.config/ghostty"
+      $DRY_RUN_CMD cp "$HOME/.config/theme/themes/base/ghostty.conf" "$HOME/.config/ghostty/theme.conf" || true
     fi
   '';
 

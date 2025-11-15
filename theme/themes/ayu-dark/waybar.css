@@ -1,0 +1,42 @@
+/* Ayu Dark Theme for Waybar */
+
+* {
+    border: none;
+    border-radius: 0;
+    font-family: "JetBrainsMono Nerd Font";
+    font-size: 13px;
+    min-height: 0;
+}
+
+window#waybar {
+    background: #0a0e14;
+    color: #b3b1ad;
+}
+
+#workspaces button {
+    padding: 0 8px;
+    background: transparent;
+    color: #686868;
+    border-bottom: 2px solid transparent;
+}
+
+#workspaces button.active {
+    color: #53bdfa;
+    border-bottom: 2px solid #53bdfa;
+}
+
+#workspaces button.urgent {
+    color: #ea6c73;
+}
+
+#clock, #battery, #cpu, #memory, #network, #pulseaudio, #tray {
+    padding: 0 10px;
+    background: #686868;
+    color: #b3b1ad;
+    margin: 3px;
+    border-radius: 4px;
+}
+
+#battery.charging { color: #91b362; }
+#battery.warning:not(.charging) { color: #f9af4f; }
+#battery.critical:not(.charging) { color: #ea6c73; }

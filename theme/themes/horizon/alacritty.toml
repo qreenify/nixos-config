@@ -1,0 +1,25 @@
+# Horizon Theme for Alacritty
+
+[colors.primary]
+background = "#1c1e26"
+foreground = "#e0e0e0"
+
+[colors.normal]
+black = "#16161c"
+red = "#e95678"
+green = "#29d398"
+yellow = "#fab795"
+blue = "#26bbd9"
+magenta = "#ee64ac"
+cyan = "#59e1e3"
+white = "#e0e0e0"
+
+[colors.bright]
+black = "#5b5858"
+red = "#e95678"
+green = "#29d398"
+yellow = "#fab795"
+blue = "#26bbd9"
+magenta = "#ee64ac"
+cyan = "#59e1e3"
+white = "#e0e0e0"

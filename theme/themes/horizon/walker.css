@@ -1,0 +1,13 @@
+/* Horizon Theme for Walker */
+
+* { color: #e0e0e0; }
+#window { background-color: rgba(28, 30, 38, 0.95); }
+#input {
+    background-color: #5b5858;
+    color: #e0e0e0;
+    border: 2px solid #26bbd9;
+    padding: 8px;
+    border-radius: 4px;
+}
+#element { background-color: transparent; padding: 8px; }
+#element:selected { background-color: #5b5858; color: #26bbd9; }

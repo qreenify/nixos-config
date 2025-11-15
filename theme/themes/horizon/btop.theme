@@ -1,0 +1,13 @@
+# Horizon theme for btop
+
+theme[main_bg]="#1c1e26"
+theme[main_fg]="#e0e0e0"
+theme[title]="#26bbd9"
+theme[hi_fg]="#59e1e3"
+theme[selected_bg]="#5b5858"
+theme[selected_fg]="#e0e0e0"
+theme[inactive_fg]="#5b5858"
+theme[cpu_box]="#26bbd9"
+theme[mem_box]="#29d398"
+theme[net_box]="#ee64ac"
+theme[proc_box]="#fab795"
