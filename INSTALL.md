@@ -6,14 +6,15 @@ This guide will help you set up your complete NixOS configuration on a new machi
 
 This flake provides a complete NixOS system with:
 
-- **Window Manager**: Hyprland with 4-monitor NVIDIA support
+- **Window Managers**: Niri (scrollable tiling) + Hyprland (dynamic tiling) - choose at login
 - **Display Manager**: Ly (TUI greeter)
 - **Theme System**: Omarchy with 13 pre-configured themes including custom "base" theme
-- **Status Bar**: Waybar with per-monitor workspaces, media player, hidden tray
-- **Applications**: Walker launcher, Mako notifications, Alacritty terminal, Vesktop
+- **Status Bar**: Waybar with per-monitor workspaces, media player, MPRIS support
+- **Terminals**: Alacritty, Kitty, and Ghostty (all with theme integration)
+- **Applications**: Walker launcher, Mako notifications, Vesktop (Discord), Zen Browser
 - **Security**: Lanzaboote secure boot
-- **NVIDIA**: RTX 4080 optimized configuration with modesetting
-- **Shell**: Nushell with custom aliases
+- **NVIDIA**: Optimized configuration with modesetting for multi-monitor setups
+- **Shell**: Nushell with custom aliases and commands
 - **RGB**: OpenRGB support for motherboard/GPU lighting
 - **Cursor**: Bibata Modern Classic
 
@@ -29,8 +30,8 @@ This flake provides a complete NixOS system with:
 ### 1. Clone Configuration
 
 ```bash
-# Clone your NixOS configuration
-git clone <YOUR_REPO_URL> ~/.config/nixos
+# Clone the NixOS configuration
+git clone https://github.com/qreenify/nixos-config.git ~/.config/nixos
 
 # Or if setting up from backup:
 # cp -r /path/to/backup ~/.config/nixos
@@ -53,12 +54,22 @@ sudo chown $USER:users ~/.config/nixos/hardware-configuration.nix
 Before building, review these files and customize for your machine:
 
 #### Monitor Setup
-Edit `~/.config/nixos/config/hypr/hyprland.conf` around line 34-50:
+Choose your compositor and edit the appropriate config:
+
+**For Niri** (recommended): Edit `~/.config/nixos/config/niri/config.kdl`
+```kdl
+// Update monitor configuration for your displays
+output "DP-2" {
+    mode "2560x1440@155.000"
+    position x=0 y=0
+}
+// ... adjust for your setup
+```
+
+**For Hyprland**: Edit `~/.config/nixos/config/hypr/hyprland.conf`
 ```conf
-# Update monitor configuration for your displays
 monitor = DP-2,2560x1440@155,0x0,1
 monitor = HDMI-A-1,1920x1080@60,2560x0,1
-# ... adjust for your setup
 ```
 
 #### NVIDIA Configuration (if different GPU)
@@ -91,10 +102,10 @@ sudo reboot
 ```
 
 You should now boot into:
-- Ly greeter (TUI login)
-- Hyprland window manager
-- Your configured multi-monitor setup
+- Ly greeter (TUI login) - choose Niri or Hyprland
+- Your selected compositor with configured multi-monitor setup
 - Omarchy theme system ready to use
+- All configured applications and tools
 
 ### 6. Post-Install
 
@@ -111,14 +122,18 @@ theme
 
 #### Verify Setup
 ```bash
-# Check if all monitors are detected
-hyprctl monitors
+# Check if all monitors are detected (choose based on compositor)
+niri msg outputs  # For Niri
+hyprctl monitors  # For Hyprland
 
 # Check waybar is running
 pgrep waybar
 
 # Test walker launcher
 SUPER + Space (or your configured keybind)
+
+# Test wallpaper selector
+wallpaper
 ```
 
 ## File Structure
@@ -137,6 +152,7 @@ SUPER + Space (or your configured keybind)
 │   ├── packages.nix      # System packages
 │   └── ...
 ├── config/                # Application configs
+│   ├── niri/             # Niri configuration
 │   ├── hypr/             # Hyprland configuration
 │   └── waybar/           # Waybar configuration
 ├── scripts/               # Utility scripts (deployed to ~/.script)
@@ -163,25 +179,36 @@ sudo nixos-rebuild switch --flake /etc/nixos#nixos
 
 ## Theming
 
-All themes are declaratively managed. To add a new theme:
+All 13 themes are declaratively managed and work with both compositors. To add a new theme:
 
 1. Create directory in `~/.config/nixos/omarchy/themes/your-theme-name/`
-2. Add theme files (walker.css, waybar.css, hyprland.conf, etc.)
-3. Rebuild to deploy
+2. Add theme files (walker.css, waybar.css, niri.kdl, hyprland.conf, alacritty.toml, etc.)
+3. Rebuild to deploy: `~/.config/nixos/rebuild.sh`
 4. Select with `theme` command
 
-Your custom "base" theme is already included with your current colors:
+The custom "base" theme uses:
 - Background: #000000 (pure black)
 - Foreground: #888888 (gray)
 - Accent: #00D4AA (cyan)
 - Border: #33ccff (cyan gradient)
+
+All themes support:
+- Niri and Hyprland (compositor colors/borders)
+- Waybar (status bar styling)
+- Alacritty, Kitty, Ghostty (terminal colors)
+- Walker launcher
+- GTK/Qt applications
+- Btop system monitor
+- Vesktop/Discord
 
 ## Troubleshooting
 
 ### Display Issues
 - Check `journalctl -b` for NVIDIA errors
 - Ensure `nvidia-drm.modeset=1` in kernel params (already configured)
-- Verify monitors with `hyprctl monitors`
+- Verify monitors:
+  - Niri: `niri msg outputs`
+  - Hyprland: `hyprctl monitors`
 
 ### Waybar Duplicates
 - Already fixed with `systemd.enable = false` in home.nix
@@ -198,13 +225,16 @@ Your custom "base" theme is already included with your current colors:
 
 ## Key Keybindings
 
-(From Hyprland config)
+Common keybindings (similar across both compositors):
 - `SUPER + Q`: Close window
 - `SUPER + Space`: Walker launcher
 - `SUPER + Return`: Terminal
 - `SUPER + 1-9`: Switch workspace
 - `SUPER + F`: Toggle fullscreen
-- `SUPER + M`: Omarchy menu
+
+For detailed keybindings:
+- Niri: See `config/niri/config.kdl`
+- Hyprland: See `config/hypr/hyprland.conf`
 
 ## Notes
 
@@ -221,6 +251,8 @@ This configuration is fully git-managed and reproducible:
 - Clone repo → Copy hardware-configuration.nix → Rebuild → Done!
 - No manual file copying or imperative setup steps required
 - All themes, scripts, and configs are self-contained
+- Works with both Niri and Hyprland out of the box
+- Easy customization through modular architecture
 
 ## Support
 
