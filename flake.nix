@@ -72,5 +72,27 @@
         }
       ];
     };
+
+    # Wonderland NixOS Installation ISO
+    nixosConfigurations.wonderland-iso = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      specialArgs = { inherit zen-browser; };
+      modules = [
+        # ISO-specific configuration
+        ./iso-config.nix
+
+        # Reuse some system modules
+        ./modules/locale.nix
+        ./modules/networking.nix
+
+        # Home Manager for live environment
+        home-manager.nixosModules.home-manager
+        {
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          home-manager.users.nixos = import ./modules/home.nix;
+        }
+      ];
+    };
   };
 }
