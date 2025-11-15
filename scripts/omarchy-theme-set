@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# NixOS-compatible theme setter with all theming support
+# Complete theme switcher for NixOS
 
-if [[ -z $1 && $1 != "CNCLD" ]]; then
+if [[ -z $1 ]]; then
   echo "Usage: omarchy-theme-set <theme-name>"
   exit 1
 fi
@@ -12,53 +12,131 @@ CURRENT_THEME_DIR="$HOME/.config/omarchy/current/theme"
 THEME_NAME=$(echo "$1" | sed -E 's/<[^>]+>//g' | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
 THEME_PATH="$THEMES_DIR/$THEME_NAME"
 
-# Check if the theme entered exists
+# Check if theme exists
 if [[ ! -d "$THEME_PATH" ]]; then
-  echo "Theme '$THEME_NAME' does not exist in $THEMES_DIR"
+  echo "❌ Theme '$THEME_NAME' does not exist in $THEMES_DIR"
   exit 1
 fi
 
-# Update theme symlinks
+echo "🎨 Applying theme: $THEME_NAME"
+
+# Update theme symlink
 ln -nsf "$THEME_PATH" "$CURRENT_THEME_DIR"
 
-# Link waybar style to theme (home-manager doesn't manage this)
+# === App-specific theming ===
+
+# 1. Waybar - link style and force restart
 mkdir -p ~/.config/waybar
 ln -nsf ~/.config/omarchy/current/theme/waybar.css ~/.config/waybar/style.css
-
-# Restart components to apply new theme
 if pgrep -x waybar >/dev/null; then
-  ~/.script/omarchy-restart-waybar 2>/dev/null
+  pkill -9 waybar
+  sleep 0.3
+  waybar >/dev/null 2>&1 &
+  echo "  ✓ Waybar restarted"
 fi
 
-# Restart walker to pick up theme changes
-if pgrep -x walker >/dev/null; then
-  pkill -x walker 2>/dev/null
+# 2. Hyprland - reload for border colors
+if [[ -f "$THEME_PATH/hyprland.conf" ]]; then
+  hyprctl reload >/dev/null 2>&1
+  echo "  ✓ Hyprland reloaded"
 fi
 
-# Reload Hyprland to apply border colors
-hyprctl reload 2>/dev/null
-
-# Reload notifications
+# 3. Mako notifications - link config and reload
 if command -v makoctl >/dev/null 2>&1; then
-  makoctl reload 2>/dev/null
+  mkdir -p ~/.config/mako
+  if [[ -f "$THEME_PATH/mako.ini" ]]; then
+    ln -nsf "$THEME_PATH/mako.ini" ~/.config/mako/config
+    makoctl reload >/dev/null 2>&1
+    echo "  ✓ Mako reloaded"
+  fi
 fi
 
-# Reload btop
-pkill -SIGUSR2 btop 2>/dev/null
+# 4. Walker - just kill it, it will restart on next launch with new theme
+if pgrep -x walker >/dev/null; then
+  pkill -x walker >/dev/null 2>&1
+  echo "  ✓ Walker will reload on next launch"
+fi
 
-# Change terminal colors (Alacritty will auto-reload via import)
+# 5. Alacritty - touch to trigger reload (imports theme via general.import)
 if [[ -f ~/.config/alacritty/alacritty.toml ]]; then
   touch ~/.config/alacritty/alacritty.toml 2>/dev/null
+  echo "  ✓ Alacritty will reload"
 fi
 
-# Reload terminal emulators
-killall -SIGUSR1 kitty 2>/dev/null
-killall -SIGUSR2 ghostty 2>/dev/null
+# 6. Kitty - send reload signal
+killall -SIGUSR1 kitty 2>/dev/null && echo "  ✓ Kitty reloaded"
 
-# Change browser theme
-~/.script/omarchy-theme-set-browser 2>/dev/null
+# 7. Ghostty - send reload signal
+killall -SIGUSR2 ghostty 2>/dev/null && echo "  ✓ Ghostty reloaded"
 
-# Change Vesktop theme
-~/.script/omarchy-theme-set-vesktop 2>/dev/null
+# 8. Btop - send reload signal
+pkill -SIGUSR2 btop 2>/dev/null && echo "  ✓ Btop reloaded"
 
-echo "✅ Theme switched to: $THEME_NAME"
+# 9. Browser theming
+if [[ -f "$THEME_PATH/chromium.theme" ]]; then
+  THEME_RGB=$(<"$THEME_PATH/chromium.theme")
+  if command -v chromium >/dev/null 2>&1; then
+    chromium --no-startup-window --set-theme-color="$THEME_RGB" 2>/dev/null &
+  fi
+  if command -v brave >/dev/null 2>&1; then
+    brave --no-startup-window --set-theme-color="$THEME_RGB" 2>/dev/null &
+  fi
+  wait
+  echo "  ✓ Browser theme updated"
+fi
+
+# 10. Vesktop/Discord - generate and apply CSS
+VESKTOP_CSS="$HOME/.config/vesktop/settings/quickCss.css"
+mkdir -p "$(dirname "$VESKTOP_CSS")"
+
+if [[ -f "$THEME_PATH/vesktop.css" ]]; then
+  cp "$THEME_PATH/vesktop.css" "$VESKTOP_CSS"
+  echo "  ✓ Vesktop theme applied"
+elif [[ -f "$THEME_PATH/waybar.css" ]]; then
+  # Generate from waybar colors
+  cat > "$VESKTOP_CSS" << 'EOFCSS'
+/* Auto-generated from omarchy theme */
+:root {
+EOFCSS
+  grep "@define-color" "$THEME_PATH/waybar.css" | while read -r line; do
+    color_name=$(echo "$line" | sed -n 's/@define-color \([^ ]*\) \(.*\);/\1/p')
+    color_value=$(echo "$line" | sed -n 's/@define-color \([^ ]*\) \(.*\);/\2/p')
+    echo "  --${color_name}: ${color_value};" >> "$VESKTOP_CSS"
+  done
+  cat >> "$VESKTOP_CSS" << 'EOFCSS'
+}
+
+/* Discord UI theming */
+.theme-dark {
+  --background-primary: var(--background);
+  --background-secondary: var(--background);
+  --background-secondary-alt: var(--background);
+  --background-tertiary: var(--background);
+  --background-accent: var(--foreground);
+  --text-normal: var(--foreground);
+  --interactive-normal: var(--foreground);
+}
+EOFCSS
+  echo "  ✓ Vesktop theme generated"
+fi
+
+# 11. Wallpaper - set if background image exists
+WALLPAPER_DIR="$THEME_PATH/backgrounds"
+if [[ -d "$WALLPAPER_DIR" ]]; then
+  # Find first image in backgrounds directory
+  WALLPAPER=$(find "$WALLPAPER_DIR" -type f \( -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" \) | head -1)
+  if [[ -n "$WALLPAPER" ]]; then
+    # Set wallpaper using hyprpaper or swaybg
+    if command -v hyprctl >/dev/null 2>&1; then
+      # For Hyprland, use hyprpaper or swaybg
+      if pgrep -x swaybg >/dev/null; then
+        pkill swaybg
+      fi
+      swaybg -i "$WALLPAPER" -m fill >/dev/null 2>&1 &
+      echo "  ✓ Wallpaper set: $(basename "$WALLPAPER")"
+    fi
+  fi
+fi
+
+echo ""
+echo "✅ Theme '$THEME_NAME' applied successfully!"

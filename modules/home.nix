@@ -26,7 +26,7 @@
       rebuild = "~/.config/nixos/rebuild.sh";
       deploy = "~/.config/nixos/deploy.sh";
       omarchy = "~/.local/share/omarchy/bin/omarchy";
-      theme = "~/.script/omarchy-theme-browser-cli";  # CLI version (GTK version has issues)
+      theme = "~/.script/theme";  # Direct theme switcher with argument support
       gdrive-start = "systemctl --user start rclone-gdrive";
       gdrive-stop = "systemctl --user stop rclone-gdrive";
       gdrive-status = "systemctl --user status rclone-gdrive";

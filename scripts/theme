@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+# Direct theme switcher - accepts theme name as argument or shows menu
+
+THEMES_DIR="$HOME/.config/omarchy/themes"
+CURRENT_LINK="$HOME/.config/omarchy/current/theme"
+
+# If argument provided, apply directly
+if [ -n "$1" ]; then
+    if [ -d "$THEMES_DIR/$1" ]; then
+        ~/.script/omarchy-theme-set "$1"
+        exit 0
+    else
+        echo "❌ Theme '$1' not found"
+        echo "Available themes:"
+        ls -1 "$THEMES_DIR" | sort
+        exit 1
+    fi
+fi
+
+# Otherwise show menu
+if [ ! -d "$THEMES_DIR" ]; then
+    echo "❌ Themes directory not found at $THEMES_DIR"
+    exit 1
+fi
+
+# Get current theme
+if [ -L "$CURRENT_LINK" ]; then
+    CURRENT=$(basename "$(readlink "$CURRENT_LINK")")
+else
+    CURRENT="none"
+fi
+
+echo "🎨 Omarchy Theme Switcher"
+echo ""
+echo "Current: $CURRENT"
+echo ""
+echo "Available themes:"
+echo ""
+
+# List themes
+THEMES=($(ls -1 "$THEMES_DIR" | sort))
+for i in "${!THEMES[@]}"; do
+    theme="${THEMES[$i]}"
+    if [ "$theme" = "$CURRENT" ]; then
+        echo "  $((i+1)). ● $theme"
+    else
+        echo "  $((i+1)).   $theme"
+    fi
+done
+
+echo ""
+read -p "Select number or name (q to quit): " choice
+
+if [[ "$choice" == "q" ]] || [[ "$choice" == "Q" ]]; then
+    exit 0
+fi
+
+# Check if it's a number
+if [[ "$choice" =~ ^[0-9]+$ ]]; then
+    if [ "$choice" -lt 1 ] || [ "$choice" -gt "${#THEMES[@]}" ]; then
+        echo "❌ Invalid choice"
+        exit 1
+    fi
+    SELECTED="${THEMES[$((choice-1))]}"
+else
+    # Treat as theme name
+    SELECTED="$choice"
+    if [ ! -d "$THEMES_DIR/$SELECTED" ]; then
+        echo "❌ Theme '$SELECTED' not found"
+        exit 1
+    fi
+fi
+
+# Apply theme
+~/.script/omarchy-theme-set "$SELECTED"
