@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=YouTube
+Comment=YouTube PWA
+Exec=brave --new-window --app=https://youtube.com --user-data-dir=/home/qreenify/.config/brave-youtube
+Icon=youtube
+Terminal=false
+Categories=Video;AudioVideo;
+StartupWMClass=brave-youtube.com__-Default

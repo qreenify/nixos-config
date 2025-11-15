@@ -4,19 +4,16 @@
 ACTION="$1"  # up, down, or mute
 
 # Find ALL YouTube sink-input IDs
-# YouTube PWA runs in browser, check parent process for --app= URL
+# YouTube PWA uses separate config directory for easy identification
 SINK_INPUTS=()
 for stream in $(wpctl status | grep -A 50 "Streams:" | grep -oP '^\s*\K\d+(?=\.)'); do
     # Get the process ID for this stream
     PID=$(pw-cli info "$stream" 2>/dev/null | grep "application.process.id" | grep -oP '"\K[0-9]+')
 
     if [ -n "$PID" ]; then
-        # Get parent PID and check its cmdline for YouTube PWA
-        PARENT_PID=$(ps -o ppid= -p "$PID" 2>/dev/null | tr -d ' ')
-        if [ -n "$PARENT_PID" ]; then
-            if grep -qi "app=.*youtube" /proc/"$PARENT_PID"/cmdline 2>/dev/null; then
-                SINK_INPUTS+=("$stream")
-            fi
+        # Check if this process has brave-youtube config directory in its command line
+        if grep -q "brave-youtube" /proc/"$PID"/cmdline 2>/dev/null; then
+            SINK_INPUTS+=("$stream")
         fi
     fi
 done

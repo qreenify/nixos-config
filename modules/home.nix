@@ -465,6 +465,11 @@
   home.file.".script".source = ../scripts;
   home.file.".script".recursive = true;
 
+  # === PWA Desktop Files ===
+  home.file.".local/share/applications/youtube.desktop".source = ../config/applications/youtube.desktop;
+  home.file.".local/share/applications/twitch.desktop".source = ../config/applications/twitch.desktop;
+  home.file.".local/share/applications/apple-music.desktop".source = ../config/applications/apple-music.desktop;
+
   # === Theme System Installation ===
   home.file.".local/share/theme/bin".source = ../theme/bin;
   home.file.".local/share/theme/default".source = ../theme/default;

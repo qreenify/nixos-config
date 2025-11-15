@@ -4,19 +4,16 @@
 ACTION="$1"  # up, down, or mute
 
 # Find ALL Music sink-input IDs
-# Music PWAs run in browser, check parent process for --app= URL
+# Music PWAs use separate config directories for easy identification
 SINK_INPUTS=()
 for stream in $(wpctl status | grep -A 50 "Streams:" | grep -oP '^\s*\K\d+(?=\.)'); do
     # Get the process ID for this stream
     PID=$(pw-cli info "$stream" 2>/dev/null | grep "application.process.id" | grep -oP '"\K[0-9]+')
 
     if [ -n "$PID" ]; then
-        # Get parent PID and check its cmdline for Music PWA
-        PARENT_PID=$(ps -o ppid= -p "$PID" 2>/dev/null | tr -d ' ')
-        if [ -n "$PARENT_PID" ]; then
-            if grep -qiE "app=.*(music\.apple|spotify)" /proc/"$PARENT_PID"/cmdline 2>/dev/null; then
-                SINK_INPUTS+=("$stream")
-            fi
+        # Check if this process has brave-apple-music or brave-spotify config directory
+        if grep -qE "brave-apple-music|brave-spotify" /proc/"$PID"/cmdline 2>/dev/null; then
+            SINK_INPUTS+=("$stream")
         fi
     fi
 done
