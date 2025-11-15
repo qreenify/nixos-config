@@ -17,6 +17,10 @@
         edit_mode: vi
       }
     '';
+    envFile.text = ''
+      # Add omarchy bin to PATH
+      $env.PATH = ($env.PATH | split row (char esep) | prepend $"($env.HOME)/.local/share/omarchy/bin")
+    '';
     shellAliases = {
       n = "nvim";
       rebuild = "~/.config/nixos/rebuild.sh";
@@ -326,8 +330,9 @@
     enable = true;
     systemd.enable = false;  # Let Hyprland start waybar instead
   };
+  # Waybar config is static, style uses omarchy theme
   xdg.configFile."waybar/config.jsonc".source = ../config/waybar/config.jsonc;
-  xdg.configFile."waybar/style.css".source = ../config/waybar/style.css;
+  xdg.configFile."waybar/style.css".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/omarchy/current/theme/waybar.css";
 
   # === Fuzzel Configuration ===
   xdg.configFile."fuzzel/fuzzel.ini".source = ../config/fuzzel/fuzzel.ini;
@@ -343,37 +348,8 @@
         italic.family = "JetBrainsMono Nerd Font";
         bold_italic.family = "JetBrainsMono Nerd Font";
       };
-
-      colors = {
-        primary = {
-          background = "#1e1e1e";
-          foreground = "#d4d4d4";
-        };
-        cursor = {
-          text = "#1e1e1e";
-          cursor = "#d4d4d4";
-        };
-        normal = {
-          black = "#1e1e1e";
-          red = "#f48771";
-          green = "#a9dc76";
-          yellow = "#ffd866";
-          blue = "#78dce8";
-          magenta = "#ab9df2";
-          cyan = "#78dce8";
-          white = "#fcfcfa";
-        };
-        bright = {
-          black = "#5b5858";
-          red = "#f48771";
-          green = "#a9dc76";
-          yellow = "#ffd866";
-          blue = "#78dce8";
-          magenta = "#ab9df2";
-          cyan = "#78dce8";
-          white = "#fcfcfa";
-        };
-      };
+      # Import colors from omarchy theme
+      import = [ "~/.config/omarchy/current/theme/alacritty.toml" ];
     };
   };
 
@@ -454,6 +430,9 @@
     jetbrains-mono
     nerd-fonts.jetbrains-mono
     font-awesome
+
+    # System utilities
+    psmisc  # Provides killall command for omarchy theme scripts
 
     # Niri utilities
     swaybg
