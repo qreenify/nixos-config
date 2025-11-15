@@ -330,9 +330,8 @@
     enable = true;
     systemd.enable = false;  # Let Hyprland start waybar instead
   };
-  # Waybar config is static, style uses omarchy theme
+  # Waybar config is static, style is symlinked by theme scripts (NOT managed by home-manager)
   xdg.configFile."waybar/config.jsonc".source = ../config/waybar/config.jsonc;
-  xdg.configFile."waybar/style.css".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/omarchy/current/theme/waybar.css";
 
   # === Fuzzel Configuration ===
   xdg.configFile."fuzzel/fuzzel.ini".source = ../config/fuzzel/fuzzel.ini;

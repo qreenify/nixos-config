@@ -21,6 +21,10 @@ fi
 # Update theme symlinks
 ln -nsf "$THEME_PATH" "$CURRENT_THEME_DIR"
 
+# Link waybar style to theme (home-manager doesn't manage this)
+mkdir -p ~/.config/waybar
+ln -nsf ~/.config/omarchy/current/theme/waybar.css ~/.config/waybar/style.css
+
 # Restart components to apply new theme
 if pgrep -x waybar >/dev/null; then
   ~/.script/omarchy-restart-waybar 2>/dev/null
