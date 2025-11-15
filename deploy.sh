@@ -39,6 +39,12 @@ if [ -d "$CONFIG_DIR/scripts" ]; then
     sudo cp -r "$CONFIG_DIR/scripts" "$TARGET/"
 fi
 
+# Copy omarchy directory (if exists)
+if [ -d "$CONFIG_DIR/omarchy" ]; then
+    echo "🎨 Copying omarchy/..."
+    sudo cp -r "$CONFIG_DIR/omarchy" "$TARGET/"
+fi
+
 # Copy hardware-configuration.nix (if exists)
 if [ -f "$CONFIG_DIR/hardware-configuration.nix" ]; then
     echo "🖥️  Copying hardware-configuration.nix..."

@@ -11,6 +11,13 @@
     pkiBundle = "/etc/secureboot";
   };
 
+  # Bootloader configuration
+  boot.loader.systemd-boot.configurationLimit = 1;  # Only show current NixOS generation (press any key during boot to see more)
+  boot.loader.timeout = 3;  # 3 second timeout
+
+  # Set NixOS as default boot entry
+  boot.loader.efi.efiSysMountPoint = "/boot";
+
   # Latest kernel
   boot.kernelPackages = pkgs.linuxPackages_latest;
 

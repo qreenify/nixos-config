@@ -12,22 +12,15 @@
     enable = true;
     extraPortals = with pkgs; [
       xdg-desktop-portal-hyprland
-      xdg-desktop-portal-gtk
     ];
     config = {
-      common = {
-        default = [ "gtk" ];
-      };
       hyprland = {
-        default = [ "hyprland" "gtk" ];
+        default = [ "hyprland" ];
         "org.freedesktop.impl.portal.Screenshot" = [ "hyprland" ];
         "org.freedesktop.impl.portal.ScreenCast" = [ "hyprland" ];
       };
     };
   };
-
-  # COSMIC Desktop Environment (experimental)
-  services.desktopManager.cosmic.enable = true;
 
   # Enable XWayland for compatibility (Steam, etc.)
   programs.xwayland.enable = true;
@@ -35,9 +28,8 @@
   # Waybar - started by niri, not systemd
   # programs.waybar.enable = true;  # Disabled to avoid duplicate instances
 
-  # Display manager
-  # Using COSMIC's native display manager
-  services.displayManager.cosmic-greeter.enable = true;
+  # Display Manager - Ly (TUI greeter for Wayland compositors)
+  services.displayManager.ly.enable = true;
 
   # Flatpak support (for Discord with Krisp)
   services.flatpak.enable = true;

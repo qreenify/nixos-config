@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Kill the entire process tree of the active window
+
+# Get PID of active window
+PID=$(hyprctl activewindow -j | jq -r '.pid')
+
+if [ -z "$PID" ] || [ "$PID" = "null" ]; then
+    notify-send "Kill Process" "No active window found"
+    exit 1
+fi
+
+# Get process name for notification
+PROCESS_NAME=$(ps -p "$PID" -o comm=)
+
+# Kill the entire process group
+pkill -TERM -P "$PID"  # Kill children first
+kill -TERM "$PID" 2>/dev/null || kill -KILL "$PID" 2>/dev/null
+
+notify-send -t 2000 "Killed Process" "$PROCESS_NAME (PID: $PID)"

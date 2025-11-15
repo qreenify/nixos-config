@@ -19,8 +19,10 @@
     '';
     shellAliases = {
       n = "nvim";
-      rebuild = "sudo nixos-rebuild switch --flake /etc/nixos#nixos";
-      deploy = "~/claude/deploy.sh";
+      rebuild = "~/.config/nixos/rebuild.sh";
+      deploy = "~/.config/nixos/deploy.sh";
+      omarchy = "~/.local/share/omarchy/bin/omarchy";
+      theme = "~/.script/omarchy-theme-browser-cli";  # CLI version (GTK version has issues)
       gdrive-start = "systemctl --user start rclone-gdrive";
       gdrive-stop = "systemctl --user stop rclone-gdrive";
       gdrive-status = "systemctl --user status rclone-gdrive";
@@ -315,10 +317,14 @@
   # === Niri Configuration ===
   xdg.configFile."niri/config.kdl".source = ../config/niri/config.kdl;
 
+  # === Hyprland Configuration ===
+  xdg.configFile."hypr".source = ../config/hypr;
+  xdg.configFile."hypr".recursive = true;
+
   # === Waybar Configuration ===
   programs.waybar = {
     enable = true;
-    systemd.enable = true;
+    systemd.enable = false;  # Let Hyprland start waybar instead
   };
   xdg.configFile."waybar/config.jsonc".source = ../config/waybar/config.jsonc;
   xdg.configFile."waybar/style.css".source = ../config/waybar/style.css;
@@ -382,8 +388,21 @@
       name = "Adwaita";
       package = pkgs.adwaita-icon-theme;
     };
+    cursorTheme = {
+      name = "Bibata-Modern-Classic";
+      package = pkgs.bibata-cursors;
+      size = 24;
+    };
     gtk3.extraConfig.gtk-application-prefer-dark-theme = true;
     gtk4.extraConfig.gtk-application-prefer-dark-theme = true;
+  };
+
+  # Set cursor theme for Hyprland
+  home.pointerCursor = {
+    gtk.enable = true;
+    name = "Bibata-Modern-Classic";
+    package = pkgs.bibata-cursors;
+    size = 24;
   };
 
   qt = {
@@ -398,6 +417,33 @@
     GTK_THEME = "Adwaita:dark";
     QT_STYLE_OVERRIDE = "adwaita-dark";
   };
+
+  # Add omarchy bin to PATH
+  home.sessionPath = [
+    "$HOME/.local/share/omarchy/bin"
+  ];
+
+  # === Scripts Installation ===
+  home.file.".script".source = ../scripts;
+  home.file.".script".recursive = true;
+
+  # === Omarchy Installation ===
+  home.file.".local/share/omarchy/bin".source = ../omarchy/bin;
+  home.file.".local/share/omarchy/default".source = ../omarchy/default;
+  home.file.".config/walker".source = ../omarchy/config/walker;
+  home.file.".config/walker".recursive = true;  # Make writable so walker can create default theme
+  home.file.".config/elephant".source = ../omarchy/config/elephant;
+  home.file.".config/omarchy/themes".source = ../omarchy/themes;
+  home.file.".config/omarchy/themes".recursive = true;
+
+  # Set base as the default theme
+  home.file.".config/omarchy/current/theme" = {
+    source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/omarchy/themes/base";
+    force = true;  # Overwrite existing symlink
+  };
+
+  # Omarchy themes are declaratively managed from ~/.config/nixos/omarchy/themes
+  # Theme switching done via "theme" command (omarchy-theme-browser-cli)
 
   # === Font Configuration ===
   fonts.fontconfig.enable = true;
@@ -427,6 +473,20 @@
     ripgrep            # Better content search
     fzf                # Fuzzy finding
     zoxide             # Smart directory jumping
+
+    # Omarchy theme browser
+    (python3.withPackages (ps: with ps; [
+      pygobject3
+      pycairo
+    ]))
+    gtk3
+    gobject-introspection
+    glib
+
+    # Omarchy-compatible apps
+    mako              # Notification daemon (themeable)
+    swayosd           # OSD for volume/brightness (themeable)
+    hyprlock          # Lock screen (themeable)
   ];
 
   # === Auto-backup NixOS config to GitHub ===

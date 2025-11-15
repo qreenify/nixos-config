@@ -1,0 +1,9 @@
+# Btop Base Theme
+
+theme[main_bg]="#000000"
+theme[main_fg]="#888888"
+theme[title]="#ffffff"
+theme[hi_fg]="#00D4AA"
+theme[selected_bg]="#2a2a2a"
+theme[selected_fg]="#ffffff"
+theme[inactive_fg]="#595959"

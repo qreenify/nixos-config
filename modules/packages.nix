@@ -18,14 +18,27 @@
     capSysAdmin = true;
   };
 
+services.hardware.openrgb = { 
+  enable = true; 
+  package = pkgs.openrgb-with-all-plugins; 
+  motherboard = "intel"; 
+  server = { 
+    port = 6742;  
+  }; 
+};
+
   environment.systemPackages = with pkgs; [
     # System utilities
     git
+    wget
+    curl
     gh
     sbctl
     rclone
     htop
     btop
+    wev
+    jq
 
     # Development
     claude-code
@@ -38,6 +51,8 @@
     zen-browser.packages."${pkgs.system}".default
     firefox
     # Communication
+    vesktop
+
     # Discord PWA in browser - native Wayland screen sharing via xdg-desktop-portal-hyprland
     # No xwaylandvideobridge needed for browser-based Discord
 
@@ -48,6 +63,12 @@
     swaylock
     mako
     wiremix
+    wireplumber
+    libnotify
+    walker
+
+    # Omarchy dependencies
+    xdg-terminal-exec
 
     # Gaming
     obs-studio

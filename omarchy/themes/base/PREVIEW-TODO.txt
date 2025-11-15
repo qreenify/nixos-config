@@ -1,0 +1,21 @@
+TODO: Create preview.png
+
+To create a preview image for this theme:
+
+1. Take a screenshot of your desktop showing:
+   - Waybar with workspaces, clock, media player
+   - A terminal window (Alacritty)
+   - The walker launcher open
+   - Window borders visible
+
+2. Crop/resize to around 1920x1080 or similar
+
+3. Save as: preview.png in this directory
+
+4. Then the theme browser will show this image when you select "base" theme
+
+Command to take screenshot:
+  grim -g "$(slurp)" ~/Pictures/base-theme-preview.png
+
+Then move it here:
+  mv ~/Pictures/base-theme-preview.png ~/.config/nixos/omarchy/themes/base/preview.png

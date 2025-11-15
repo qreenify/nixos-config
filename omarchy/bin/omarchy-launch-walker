@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+# NixOS version - simplified without elephant/uwsm dependencies
+# Walker on NixOS doesn't support --minheight/--maxheight, only --height
+
+# Filter out unsupported options and replace with --height
+args=()
+skip_next=false
+for arg in "$@"; do
+  if [ "$skip_next" = true ]; then
+    skip_next=false
+    continue
+  fi
+
+  case "$arg" in
+    --minheight|--maxheight)
+      skip_next=true
+      ;;
+    *)
+      args+=("$arg")
+      ;;
+  esac
+done
+
+exec walker --width 644 --height 300 "${args[@]}"

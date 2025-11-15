@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+omarchy-refresh-config fastfetch/config.jsonc

@@ -24,3 +24,6 @@ fi
 
 # Nudge Waybar custom module to refresh (signal 8 below)
 pkill -SIGRTMIN+8 waybar >/dev/null 2>&1 || true
+
+# Update RGB lighting
+~/.script/mic-rgb-sync >/dev/null 2>&1 || true

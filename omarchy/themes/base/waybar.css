@@ -1,0 +1,11 @@
+/* Waybar Base Theme */
+/* Based on current setup colors */
+
+@define-color background #000000;
+@define-color foreground #888888;
+@define-color active #ffffff;
+@define-color inactive #595959;
+@define-color border-active #33ccff;
+@define-color border-inactive #595959;
+@define-color accent #00D4AA;
+@define-color urgent #ff6666;

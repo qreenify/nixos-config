@@ -20,7 +20,7 @@ window#waybar {
     color: #888888;
     background-color: transparent;
     padding: 0 8px;
-    border-radius: 3px;
+    border-radius: 0;
     transition: all 0.3s;
 }
 
@@ -94,11 +94,11 @@ window#waybar {
 }
 
 #clock {
-    background-color: rgba(20, 20, 20, 0.8);
+    background-color: transparent;
     color: #888888;
     padding: 0 10px;
     margin: 0 4px;
-    border-radius: 4px;
+    border-radius: 0;
     font-weight: bold;
 }
 
@@ -114,10 +114,32 @@ tooltip label {
 }
 
 #tray {
-    background-color: rgba(20, 20, 20, 0.8);
+    background-color: transparent;
     padding: 0 10px;
     margin: 0 4px;
-    border-radius: 4px;
+    border-radius: 0;
+}
+
+/* Hide tray items by default */
+#tray > * {
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+    transition: all 0.3s ease;
+}
+
+#tray:not(:hover) > * {
+    opacity: 0;
+    min-width: 0;
+    padding: 0;
+    margin: 0;
+}
+
+/* Show tray items on hover */
+#tray:hover > * {
+    opacity: 1;
+    padding: 0 2px;
+    min-width: 18px;
 }
 
 #tray > .passive {
@@ -127,4 +149,16 @@ tooltip label {
 #tray > .needs-attention {
     -gtk-icon-effect: highlight;
     background-color: rgba(100, 50, 50, 0.8);
+    opacity: 1;
+}
+
+#mpris {
+    color: #888888;
+    font-style: italic;
+    padding: 0 10px;
+    margin-left: 10px;
+}
+
+#mpris.paused {
+    color: #666666;
 }
