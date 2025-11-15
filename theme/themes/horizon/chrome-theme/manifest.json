@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "Horizon Theme",
+  "version": "1.0",
+  "description": "Horizon color theme for Chrome/Brave",
+  "theme": {
+    "colors": {
+      "toolbar": [28, 30, 38],
+      "tab_text": [224, 224, 224],
+      "tab_background_text": [38, 187, 217],
+      "bookmark_text": [224, 224, 224],
+      "ntp_background": [28, 30, 38],
+      "ntp_text": [224, 224, 224],
+      "button_background": [22, 22, 28],
+      "frame": [28, 30, 38],
+      "frame_inactive": [22, 22, 28],
+      "omnibox_text": [224, 224, 224],
+      "omnibox_background": [22, 22, 28]
+    },
+    "tints": {
+      "buttons": [0.0, 0.0, 0.5]
+    },
+    "images": {
+      "theme_ntp_background": "background.png"
+    },
+    "properties": {
+      "ntp_background_alignment": "center",
+      "ntp_background_repeat": "no-repeat"
+    }
+  }
+}

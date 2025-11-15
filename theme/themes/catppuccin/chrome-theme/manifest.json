@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "Catppuccin Theme",
+  "version": "1.0",
+  "description": "Catppuccin color theme for Chrome/Brave",
+  "theme": {
+    "colors": {
+      "toolbar": [30, 30, 46],
+      "tab_text": [205, 214, 244],
+      "tab_background_text": [137, 180, 250],
+      "bookmark_text": [205, 214, 244],
+      "ntp_background": [30, 30, 46],
+      "ntp_text": [205, 214, 244],
+      "button_background": [69, 71, 90],
+      "frame": [30, 30, 46],
+      "frame_inactive": [69, 71, 90],
+      "omnibox_text": [205, 214, 244],
+      "omnibox_background": [69, 71, 90]
+    },
+    "tints": {
+      "buttons": [0.0, 0.0, 0.5]
+    },
+    "images": {
+      "theme_ntp_background": "background.png"
+    },
+    "properties": {
+      "ntp_background_alignment": "center",
+      "ntp_background_repeat": "no-repeat"
+    }
+  }
+}

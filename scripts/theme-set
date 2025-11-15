@@ -86,10 +86,16 @@ fi
 # 8. Btop - send reload signal
 pkill -SIGUSR2 btop 2>/dev/null && echo "  ✓ Btop reloaded"
 
-# 9. Browser theming - DISABLED
-# Note: --set-theme-color requires custom chromium fork (custom fork)
-# Standard Chromium/Brave don't support this flag
-# Alternative: Use managed policies (requires NixOS config) or browser extensions
+# 9. Browser theming - Deploy Chrome themes to PWAs
+if [[ -d "$THEME_PATH/chrome-theme" ]]; then
+  for pwa_dir in ~/.config/brave-{youtube,twitch,apple-music,spotify}; do
+    if [[ -d "$pwa_dir" ]]; then
+      mkdir -p "$pwa_dir/Default/Extensions/theme"
+      cp -r "$THEME_PATH/chrome-theme/"* "$pwa_dir/Default/Extensions/theme/"
+    fi
+  done
+  echo "  ✓ Chrome themes deployed to PWAs"
+fi
 
 # 10. Vesktop/Discord - generate and apply CSS
 VESKTOP_CSS="$HOME/.config/vesktop/settings/quickCss.css"

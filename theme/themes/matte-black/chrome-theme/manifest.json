@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "Matte-black Theme",
+  "version": "1.0",
+  "description": "Matte-black color theme for Chrome/Brave",
+  "theme": {
+    "colors": {
+      "toolbar": [18, 18, 18],
+      "tab_text": [190, 190, 190],
+      "tab_background_text": [230, 142, 13],
+      "bookmark_text": [190, 190, 190],
+      "ntp_background": [18, 18, 18],
+      "ntp_text": [190, 190, 190],
+      "button_background": [51, 51, 51],
+      "frame": [18, 18, 18],
+      "frame_inactive": [51, 51, 51],
+      "omnibox_text": [190, 190, 190],
+      "omnibox_background": [51, 51, 51]
+    },
+    "tints": {
+      "buttons": [0.0, 0.0, 0.5]
+    },
+    "images": {
+      "theme_ntp_background": "background.png"
+    },
+    "properties": {
+      "ntp_background_alignment": "center",
+      "ntp_background_repeat": "no-repeat"
+    }
+  }
+}

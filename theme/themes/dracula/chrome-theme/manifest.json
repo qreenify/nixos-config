@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "Dracula Theme",
+  "version": "1.0",
+  "description": "Dracula color theme for Chrome/Brave",
+  "theme": {
+    "colors": {
+      "toolbar": [40, 42, 54],
+      "tab_text": [248, 248, 242],
+      "tab_background_text": [189, 147, 249],
+      "bookmark_text": [248, 248, 242],
+      "ntp_background": [40, 42, 54],
+      "ntp_text": [248, 248, 242],
+      "button_background": [33, 34, 44],
+      "frame": [40, 42, 54],
+      "frame_inactive": [33, 34, 44],
+      "omnibox_text": [248, 248, 242],
+      "omnibox_background": [33, 34, 44]
+    },
+    "tints": {
+      "buttons": [0.0, 0.0, 0.5]
+    },
+    "images": {
+      "theme_ntp_background": "background.png"
+    },
+    "properties": {
+      "ntp_background_alignment": "center",
+      "ntp_background_repeat": "no-repeat"
+    }
+  }
+}

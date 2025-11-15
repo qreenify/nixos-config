@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "Material-palenight Theme",
+  "version": "1.0",
+  "description": "Material-palenight color theme for Chrome/Brave",
+  "theme": {
+    "colors": {
+      "toolbar": [41, 45, 62],
+      "tab_text": [166, 172, 205],
+      "tab_background_text": [130, 170, 255],
+      "bookmark_text": [166, 172, 205],
+      "ntp_background": [41, 45, 62],
+      "ntp_text": [166, 172, 205],
+      "button_background": [41, 45, 62],
+      "frame": [41, 45, 62],
+      "frame_inactive": [41, 45, 62],
+      "omnibox_text": [166, 172, 205],
+      "omnibox_background": [41, 45, 62]
+    },
+    "tints": {
+      "buttons": [0.0, 0.0, 0.5]
+    },
+    "images": {
+      "theme_ntp_background": "background.png"
+    },
+    "properties": {
+      "ntp_background_alignment": "center",
+      "ntp_background_repeat": "no-repeat"
+    }
+  }
+}

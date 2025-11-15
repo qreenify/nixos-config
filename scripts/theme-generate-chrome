@@ -1,0 +1,89 @@
+#!/usr/bin/env bash
+# Generate Chrome theme manifest from theme colors
+
+THEME_NAME="${1:-}"
+if [[ -z "$THEME_NAME" ]]; then
+  echo "Usage: theme-generate-chrome <theme-name>"
+  exit 1
+fi
+
+THEMES_DIR="$HOME/.config/nixos/theme/themes"
+THEME_PATH="$THEMES_DIR/$THEME_NAME"
+
+if [[ ! -d "$THEME_PATH" ]]; then
+  echo "❌ Theme '$THEME_NAME' does not exist"
+  exit 1
+fi
+
+CHROME_THEME_DIR="$THEME_PATH/chrome-theme"
+mkdir -p "$CHROME_THEME_DIR"
+
+# Extract colors from alacritty.toml
+if [[ ! -f "$THEME_PATH/alacritty.toml" ]]; then
+  echo "❌ No alacritty.toml found for theme '$THEME_NAME'"
+  exit 1
+fi
+
+# Parse colors from alacritty.toml
+BG=$(grep 'background = ' "$THEME_PATH/alacritty.toml" | head -1 | sed 's/.*= "\#\([^"]*\)".*/\1/')
+FG=$(grep 'foreground = ' "$THEME_PATH/alacritty.toml" | head -1 | sed 's/.*= "\#\([^"]*\)".*/\1/')
+BLUE=$(grep '^blue = ' "$THEME_PATH/alacritty.toml" | head -1 | sed 's/.*= "\#\([^"]*\)".*/\1/')
+BLACK=$(grep '^black = ' "$THEME_PATH/alacritty.toml" | head -1 | sed 's/.*= "\#\([^"]*\)".*/\1/')
+
+# Convert hex to RGB
+hex_to_rgb() {
+  hex=$1
+  r=$((16#${hex:0:2}))
+  g=$((16#${hex:2:2}))
+  b=$((16#${hex:4:2}))
+  echo "$r, $g, $b"
+}
+
+BG_RGB=$(hex_to_rgb "$BG")
+FG_RGB=$(hex_to_rgb "$FG")
+BLUE_RGB=$(hex_to_rgb "$BLUE")
+BLACK_RGB=$(hex_to_rgb "$BLACK")
+
+# Create manifest.json
+cat > "$CHROME_THEME_DIR/manifest.json" << EOF
+{
+  "manifest_version": 3,
+  "name": "${THEME_NAME^} Theme",
+  "version": "1.0",
+  "description": "${THEME_NAME^} color theme for Chrome/Brave",
+  "theme": {
+    "colors": {
+      "toolbar": [$BG_RGB],
+      "tab_text": [$FG_RGB],
+      "tab_background_text": [$BLUE_RGB],
+      "bookmark_text": [$FG_RGB],
+      "ntp_background": [$BG_RGB],
+      "ntp_text": [$FG_RGB],
+      "button_background": [$BLACK_RGB],
+      "frame": [$BG_RGB],
+      "frame_inactive": [$BLACK_RGB],
+      "omnibox_text": [$FG_RGB],
+      "omnibox_background": [$BLACK_RGB]
+    },
+    "tints": {
+      "buttons": [0.0, 0.0, 0.5]
+    },
+    "images": {
+      "theme_ntp_background": "background.png"
+    },
+    "properties": {
+      "ntp_background_alignment": "center",
+      "ntp_background_repeat": "no-repeat"
+    }
+  }
+}
+EOF
+
+# Copy background image
+if [[ -f "$THEME_PATH/backgrounds/background.png" ]]; then
+  cp "$THEME_PATH/backgrounds/background.png" "$CHROME_THEME_DIR/background.png"
+elif [[ -f "$THEME_PATH/background.png" ]]; then
+  cp "$THEME_PATH/background.png" "$CHROME_THEME_DIR/background.png"
+fi
+
+echo "✓ Generated Chrome theme for '$THEME_NAME'"

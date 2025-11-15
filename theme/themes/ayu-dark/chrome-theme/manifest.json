@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "Ayu-dark Theme",
+  "version": "1.0",
+  "description": "Ayu-dark color theme for Chrome/Brave",
+  "theme": {
+    "colors": {
+      "toolbar": [10, 14, 20],
+      "tab_text": [179, 177, 173],
+      "tab_background_text": [83, 189, 250],
+      "bookmark_text": [179, 177, 173],
+      "ntp_background": [10, 14, 20],
+      "ntp_text": [179, 177, 173],
+      "button_background": [1, 6, 14],
+      "frame": [10, 14, 20],
+      "frame_inactive": [1, 6, 14],
+      "omnibox_text": [179, 177, 173],
+      "omnibox_background": [1, 6, 14]
+    },
+    "tints": {
+      "buttons": [0.0, 0.0, 0.5]
+    },
+    "images": {
+      "theme_ntp_background": "background.png"
+    },
+    "properties": {
+      "ntp_background_alignment": "center",
+      "ntp_background_repeat": "no-repeat"
+    }
+  }
+}

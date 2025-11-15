@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "Solarized-dark Theme",
+  "version": "1.0",
+  "description": "Solarized-dark color theme for Chrome/Brave",
+  "theme": {
+    "colors": {
+      "toolbar": [0, 43, 54],
+      "tab_text": [131, 148, 150],
+      "tab_background_text": [38, 139, 210],
+      "bookmark_text": [131, 148, 150],
+      "ntp_background": [0, 43, 54],
+      "ntp_text": [131, 148, 150],
+      "button_background": [7, 54, 66],
+      "frame": [0, 43, 54],
+      "frame_inactive": [7, 54, 66],
+      "omnibox_text": [131, 148, 150],
+      "omnibox_background": [7, 54, 66]
+    },
+    "tints": {
+      "buttons": [0.0, 0.0, 0.5]
+    },
+    "images": {
+      "theme_ntp_background": "background.png"
+    },
+    "properties": {
+      "ntp_background_alignment": "center",
+      "ntp_background_repeat": "no-repeat"
+    }
+  }
+}

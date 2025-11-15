@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "Base Theme",
+  "version": "1.0",
+  "description": "Base color theme for Chrome/Brave",
+  "theme": {
+    "colors": {
+      "toolbar": [30, 30, 30],
+      "tab_text": [212, 212, 212],
+      "tab_background_text": [120, 220, 232],
+      "bookmark_text": [212, 212, 212],
+      "ntp_background": [30, 30, 30],
+      "ntp_text": [212, 212, 212],
+      "button_background": [91, 88, 88],
+      "frame": [30, 30, 30],
+      "frame_inactive": [91, 88, 88],
+      "omnibox_text": [212, 212, 212],
+      "omnibox_background": [91, 88, 88]
+    },
+    "tints": {
+      "buttons": [0.0, 0.0, 0.5]
+    },
+    "images": {
+      "theme_ntp_background": "background.png"
+    },
+    "properties": {
+      "ntp_background_alignment": "center",
+      "ntp_background_repeat": "no-repeat"
+    }
+  }
+}
