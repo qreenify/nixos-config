@@ -408,8 +408,11 @@
   home.file.".config/walker".source = ../omarchy/config/walker;
   home.file.".config/walker".recursive = true;  # Make writable so walker can create default theme
   home.file.".config/elephant".source = ../omarchy/config/elephant;
-  home.file.".config/omarchy/themes".source = ../omarchy/themes;
-  home.file.".config/omarchy/themes".recursive = true;
+  home.file.".config/omarchy/themes" = {
+    source = ../omarchy/themes;
+    recursive = true;
+    force = true;  # Allow overwriting existing theme files
+  };
 
   # Set base as the default theme
   home.file.".config/omarchy/current/theme" = {
