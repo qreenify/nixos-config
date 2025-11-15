@@ -4,16 +4,19 @@
 ACTION="$1"  # up, down, or mute
 
 # Find Vesktop's sink-input ID
-# Look for "vesktop" or "Vesktop" in the application name
-SINK_INPUT=$(wpctl status | grep -i "vesktop" | grep -oP '^\s*\K\d+' | head -1)
+# Vesktop runs as Electron, so we search for streams from the electron binary
+SINK_INPUT=$(
+    for stream in $(wpctl status | grep -A 50 "Streams:" | grep -oP '^\s*\K\d+(?=\.)'); do
+        # Check if this stream belongs to electron (Vesktop)
+        if pw-cli info "$stream" 2>/dev/null | grep -q "application.process.binary.*electron"; then
+            echo "$stream"
+            break
+        fi
+    done
+)
 
 if [ -z "$SINK_INPUT" ]; then
-    # If not found, try looking for Discord
-    SINK_INPUT=$(wpctl status | grep -i "discord" | grep -oP '^\s*\K\d+' | head -1)
-fi
-
-if [ -z "$SINK_INPUT" ]; then
-    notify-send "Vesktop Volume" "Vesktop not found" -t 2000
+    notify-send "Vesktop Volume" "Vesktop not found (make sure it's playing audio)" -t 2000
     exit 1
 fi
 
