@@ -7,7 +7,7 @@
   "modules-left": [
     "hyprland/workspaces",
     "niri/workspaces",
-    "mpris"
+    "custom/mpris-music"
   ],
   "modules-center": [
     "clock"
@@ -72,34 +72,23 @@
     "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
   },
 
-  // Media player
-  "mpris": {
-    "format": "{player_icon} {dynamic}",
-    "format-paused": "{status_icon} <i>{dynamic}</i>",
-    "player-icons": {
-      "default": "▶",
-      "mpv": "🎵",
-      "firefox": "🌐",
-      "spotify": "🎧"
-    },
-    "status-icons": {
-      "paused": "⏸"
-    },
-    "dynamic-order": ["title", "artist"],
-    "dynamic-separator": " - ",
-    "max-length": 50,
-    "ignored-players": [],
+  // Media player - custom script to only show Apple Music / Spotify (filters by PWA user-data-dir)
+  "custom/mpris-music": {
+    "exec": "~/.script/waybar-mpris-music-only",
+    "return-type": "json",
+    "format": "{}",
     "interval": 2,
-    "tooltip": false
+    "escape": false
   },
 
-  // Per-app volume indicators
+  // Per-app volume indicators (ALL playing apps with window titles)
   "custom/app-volumes": {
-    "exec": "~/.config/nixos/scripts/app-volume-waybar",
+    "exec": "~/.script/app-volume-waybar-all",
     "return-type": "json",
     "format": "{}",
     "on-click": "~/.script/app-volume-toggle",
+    "on-click-right": "~/.script/app-volume-menu",
     "escape": false,
-    "restart-interval": 1
+    "signal": 8
   }
 }

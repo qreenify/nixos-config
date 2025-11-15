@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# Waybar MPRIS module - only show Apple Music and Spotify (ignore browser tabs)
+
+# Get all active media players
+players=$(playerctl -l 2>/dev/null)
+
+# Filter for music players only (Apple Music PWA or Spotify)
+music_player=""
+for player in $players; do
+    # Get the PID of the player
+    pid=$(playerctl -p "$player" metadata 2>/dev/null | grep -oP 'mpris:pid\s+\K\d+')
+
+    if [[ -n "$pid" ]]; then
+        # Check command line for PWA user-data-dir
+        cmdline=$(ps -p "$pid" -o args= 2>/dev/null)
+
+        # Check if it's Apple Music or Spotify PWA
+        if [[ "$cmdline" =~ brave-apple-music ]] || [[ "$cmdline" =~ brave-spotify ]] || [[ "$player" =~ [Ss]potify ]]; then
+            music_player="$player"
+            break
+        fi
+    fi
+done
+
+# If no music player found, exit
+if [[ -z "$music_player" ]]; then
+    echo '{"text":"","class":"hidden"}'
+    exit 0
+fi
+
+# Get metadata from the music player
+status=$(playerctl -p "$music_player" status 2>/dev/null)
+title=$(playerctl -p "$music_player" metadata title 2>/dev/null)
+artist=$(playerctl -p "$music_player" metadata artist 2>/dev/null)
+
+# Format output
+if [[ -n "$title" ]]; then
+    text="🎧 $title"
+    [[ -n "$artist" ]] && text="🎧 $title - $artist"
+
+    # Limit length
+    if [[ ${#text} -gt 50 ]]; then
+        text="${text:0:47}..."
+    fi
+
+    # Add paused indicator
+    if [[ "$status" == "Paused" ]]; then
+        text="⏸ $text"
+    fi
+
+    echo "{\"text\":\"$text\",\"class\":\"music\"}"
+else
+    echo '{"text":"","class":"hidden"}'
+fi

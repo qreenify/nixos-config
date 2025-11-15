@@ -466,9 +466,37 @@
   home.file.".script".recursive = true;
 
   # === PWA Desktop Files ===
-  home.file.".local/share/applications/youtube.desktop".source = ../config/applications/youtube.desktop;
-  home.file.".local/share/applications/twitch.desktop".source = ../config/applications/twitch.desktop;
-  home.file.".local/share/applications/apple-music.desktop".source = ../config/applications/apple-music.desktop;
+  home.file.".local/share/applications/youtube.desktop" = {
+    source = ../config/applications/youtube.desktop;
+    force = true;  # Allow overwriting existing file
+  };
+  home.file.".local/share/applications/twitch.desktop" = {
+    source = ../config/applications/twitch.desktop;
+    force = true;  # Allow overwriting existing file
+  };
+  home.file.".local/share/applications/apple-music.desktop" = {
+    source = ../config/applications/apple-music.desktop;
+    force = true;  # Allow overwriting existing file
+  };
+
+  # Jellyfin Media Player - simplified launcher (hides extra Desktop/TV modes)
+  home.file.".local/share/applications/com.github.iwalton3.jellyfin-media-player.desktop" = {
+    text = ''
+      [Desktop Entry]
+      Version=1.0
+      Type=Application
+      Name=Jellyfin Media Player
+      Comment=Jellyfin Desktop Client
+      Exec=flatpak run com.github.iwalton3.jellyfin-media-player
+      Icon=com.github.iwalton3.jellyfin-media-player
+      Terminal=false
+      Categories=AudioVideo;Video;Player;TV;
+      MimeType=application/x-mpegURL;video/x-matroska;video/webm;video/mpeg;
+      StartupNotify=false
+      X-Flatpak=com.github.iwalton3.jellyfin-media-player
+    '';
+    force = true;
+  };
 
   # === Theme System Installation ===
   home.file.".local/share/theme/bin".source = ../theme/bin;
@@ -477,9 +505,16 @@
   home.file.".config/walker".recursive = true;  # Make writable so walker can create default theme
   home.file.".config/elephant".source = ../theme/config/elephant;
 
-  # Only deploy base theme to nix store (other themes synced via theme-sync script)
+  # Deploy base and pulsar-theme to nix store (always available)
+  # Other 19 themes live in ~/.config/theme/themes/ (not rebuilt every time)
   home.file.".config/theme/themes/base" = {
     source = ../theme/themes/base;
+    recursive = true;
+    force = true;  # Allow overwriting existing theme files
+  };
+
+  home.file.".config/theme/themes/pulsar-theme" = {
+    source = ../theme/themes/pulsar-theme;
     recursive = true;
     force = true;  # Allow overwriting existing theme files
   };
@@ -515,6 +550,20 @@
   # Themes are declaratively managed from ~/.config/nixos/theme/themes
   # Theme switching done via "theme" command
 
+  # === Flatpak Overrides (Declarative) ===
+  # Automatically sync cursor theme to all Flatpak apps on each rebuild
+  home.activation.syncFlatpakCursor = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+    mkdir -p "$HOME/.local/share/flatpak/overrides"
+    cat > "$HOME/.local/share/flatpak/overrides/global" << 'FLATPAK_EOF'
+[Context]
+filesystems=/nix/store:ro
+
+[Environment]
+XCURSOR_THEME=${config.home.pointerCursor.name}
+FLATPAK_EOF
+    echo "✓ Flatpak cursor theme synced to: ${config.home.pointerCursor.name}"
+  '';
+
   # === Font Configuration ===
   fonts.fontconfig.enable = true;
 
@@ -547,7 +596,7 @@
     fzf                # Fuzzy finding
     zoxide             # Smart directory jumping
 
-    # Theme browser
+    # Theme browser and tray daemon
     (python3.withPackages (ps: with ps; [
       pygobject3
       pycairo
@@ -555,11 +604,13 @@
     gtk3
     gobject-introspection
     glib
+    libappindicator-gtk3
 
     # Theme-compatible apps
     mako              # Notification daemon (themeable)
     swayosd           # OSD for volume/brightness (themeable)
     hyprlock          # Lock screen (themeable)
+    pulsemixer        # Terminal-based PipeWire/PulseAudio mixer
   ];
 
   # === Auto-backup NixOS config to GitHub ===
@@ -613,6 +664,46 @@
     };
     Install = {
       WantedBy = [ "default.target" ];
+    };
+  };
+
+  # === App Volume Tray Daemon ===
+  systemd.user.services.app-volume-tray = {
+    Unit = {
+      Description = "Per-application volume control tray icons";
+      After = [ "graphical-session.target" ];
+      PartOf = [ "graphical-session.target" ];
+    };
+    Service = {
+      Type = "simple";
+      ExecStart = "${pkgs.writeShellScript "app-volume-tray-wrapper" ''
+        export GI_TYPELIB_PATH="${pkgs.glib}/lib/girepository-1.0:${pkgs.gtk3}/lib/girepository-1.0:${pkgs.libappindicator-gtk3}/lib/girepository-1.0:${pkgs.gobject-introspection}/lib/girepository-1.0"
+        export PATH="/run/current-system/sw/bin:${pkgs.pipewire}/bin:${pkgs.hyprland}/bin:${pkgs.jq}/bin:$PATH"
+        exec ${pkgs.python3.withPackages (ps: with ps; [ pygobject3 pycairo ])}/bin/python3 ${../scripts/app-volume-tray-daemon}
+      ''}";
+      Restart = "on-failure";
+      RestartSec = "5s";
+    };
+    Install = {
+      WantedBy = [ "graphical-session.target" ];
+    };
+  };
+
+  # === App Volume Event Monitor ===
+  systemd.user.services.app-volume-event-monitor = {
+    Unit = {
+      Description = "Monitor PipeWire events and signal waybar instantly";
+      After = [ "pipewire.service" ];
+      PartOf = [ "graphical-session.target" ];
+    };
+    Service = {
+      Type = "simple";
+      ExecStart = "${../scripts/app-volume-event-monitor}";
+      Restart = "always";
+      RestartSec = "3s";
+    };
+    Install = {
+      WantedBy = [ "graphical-session.target" ];
     };
   };
 

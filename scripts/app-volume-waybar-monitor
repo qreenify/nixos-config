@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Monitor PipeWire events and signal waybar to update app-volumes module
+
+# Signal number for waybar (SIGRTMIN+8)
+SIGNAL=8
+
+# Debounce interval (seconds) - don't signal more often than this
+DEBOUNCE=0.5
+LAST_SIGNAL=0
+
+# Function to send signal to waybar (with debouncing)
+signal_waybar() {
+    local now=$(date +%s.%N)
+    local elapsed=$(echo "$now - $LAST_SIGNAL" | bc)
+
+    # Only signal if enough time has passed
+    if (( $(echo "$elapsed >= $DEBOUNCE" | bc -l) )); then
+        pkill -RTMIN+$SIGNAL waybar 2>/dev/null
+        LAST_SIGNAL=$now
+    fi
+}
+
+# Initial signal
+signal_waybar
+
+# Monitor PipeWire events
+# pw-mon outputs events for nodes, ports, and property changes
+pw-mon | while read -r line; do
+    # Only trigger on Node events (new/removed audio streams) and property changes (volume, mute)
+    # Ignore most property changes to reduce noise
+    if echo "$line" | grep -qE "added.*Node|removed.*Node|Props.*volume|Props.*mute"; then
+        signal_waybar
+    fi
+done

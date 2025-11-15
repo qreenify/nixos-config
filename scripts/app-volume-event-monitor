@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# Event-based monitor for PipeWire/PulseAudio changes
+# Signals waybar and updates cache immediately when audio streams change
+
+SIGNAL=8
+LAST_UPDATE=0
+MIN_INTERVAL=100  # Minimum milliseconds between updates (debounce)
+
+CACHE_UPDATE="${HOME}/.config/nixos/scripts/app-volume-cache-update"
+[[ ! -x "$CACHE_UPDATE" ]] && CACHE_UPDATE="${HOME}/.script/app-volume-cache-update"
+
+update_all() {
+    local now=$(date +%s%3N)  # Milliseconds since epoch
+    local elapsed=$((now - LAST_UPDATE))
+
+    if [ $elapsed -ge $MIN_INTERVAL ]; then
+        # Update cache first (for instant volume control)
+        "$CACHE_UPDATE" &
+        # Signal waybar
+        pkill -RTMIN+$SIGNAL waybar 2>/dev/null
+        LAST_UPDATE=$now
+    fi
+}
+
+# Initial update on startup
+update_all
+
+# Monitor PipeWire events using pw-mon
+# This catches: new streams, removed streams, volume changes, mute changes
+pw-mon 2>/dev/null | while read -r line; do
+    # Catch ALL relevant events:
+    # - Node additions/removals (new/closed streams)
+    # - Props changes (volume/mute/state changes)
+    # This ensures external mixer changes are caught
+    if echo "$line" | grep -qE "(added|removed) Node|changed"; then
+        update_all
+    fi
+done

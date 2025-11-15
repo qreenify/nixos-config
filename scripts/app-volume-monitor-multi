@@ -1,0 +1,147 @@
+#!/usr/bin/env bash
+# Monitor per-application audio volumes for tray daemon
+# Supports multiple streams per app type
+
+get_app_from_pid() {
+    local pid=$1
+
+    # Get command line args
+    local cmdline=$(ps -p "$pid" -o args= 2>/dev/null)
+    [[ -z "$cmdline" ]] && return
+
+    # Extract user-data-dir if present
+    if [[ "$cmdline" =~ --user-data-dir=([^\ ]+) ]]; then
+        local datadir="${BASH_REMATCH[1]}"
+
+        case "$datadir" in
+            *brave-youtube*)
+                echo "youtube"
+                return
+                ;;
+            *brave-apple-music*)
+                echo "apple-music"
+                return
+                ;;
+            *brave-twitch*)
+                echo "twitch"
+                return
+                ;;
+            *brave-plex*)
+                echo "plex"
+                return
+                ;;
+            *brave-jellyfin*)
+                echo "jellyfin"
+                return
+                ;;
+            */vesktop*)
+                echo "vesktop"
+                return
+                ;;
+        esac
+    fi
+
+    # Fallback: check if it's Vesktop by process name
+    if [[ "$cmdline" == */vesktop* ]] || [[ "$cmdline" == *vesktop* ]]; then
+        echo "vesktop"
+        return
+    fi
+
+    # Generic fallback: extract process name for unknown apps
+    local proc_name=$(ps -p "$pid" -o comm= 2>/dev/null | tr -d ' ')
+    if [[ -n "$proc_name" ]]; then
+        echo "generic-${proc_name}"
+        return
+    fi
+}
+
+get_window_title() {
+    local pid=$1
+
+    # Try to get window title from Hyprland for this PID
+    local title=$(hyprctl clients -j 2>/dev/null | jq -r ".[] | select(.pid == $pid) | .title" 2>/dev/null | head -1)
+
+    if [[ -n "$title" ]] && [[ "$title" != "null" ]] && [[ "$title" != "" ]]; then
+        echo "$title"
+        return
+    fi
+
+    # If not found, try parent PID (audio streams might be subprocesses)
+    local ppid=$(ps -o ppid= -p "$pid" 2>/dev/null | tr -d ' ')
+    if [[ -n "$ppid" ]] && [[ "$ppid" != "1" ]]; then
+        title=$(hyprctl clients -j 2>/dev/null | jq -r ".[] | select(.pid == $ppid) | .title" 2>/dev/null | head -1)
+        if [[ -n "$title" ]] && [[ "$title" != "null" ]] && [[ "$title" != "" ]]; then
+            echo "$title"
+            return
+        fi
+    fi
+
+    echo "Unknown"
+}
+
+get_stream_info() {
+    local stream_id=$1
+    local info=$(wpctl inspect "$stream_id" 2>/dev/null)
+
+    # Only process output streams
+    if ! echo "$info" | grep -q "Stream/Output/Audio"; then
+        return
+    fi
+
+    # Get PID
+    local pid=$(echo "$info" | grep "application.process.id" | head -1 | awk '{print $3}' | tr -d '"')
+    [[ -z "$pid" ]] && return
+
+    # Get app name
+    local app=$(get_app_from_pid "$pid")
+    [[ -z "$app" ]] && return
+
+    # Get window title
+    local title=$(get_window_title "$pid")
+
+    # Get volume (format: "Volume: 0.50" or "Volume: 0.50 [MUTED]")
+    local vol_line=$(wpctl get-volume "$stream_id" 2>/dev/null)
+    [[ -z "$vol_line" ]] && return
+
+    local muted=$(echo "$vol_line" | grep -q "MUTED" && echo "true" || echo "false")
+
+    # Convert to percentage (volume is 0.0-1.0, convert to 0-100)
+    local vol_percent=$(echo "$vol_line" | awk '{printf "%.0f", $2 * 100}')
+
+    echo "$app:$stream_id:$vol_percent:$muted:$pid:$title"
+}
+
+# Main - run once and output ALL streams (multiple per app type)
+declare -a streams
+
+# Get all streams from wpctl status
+while IFS= read -r line; do
+    # Extract stream ID from lines like "       40. Chromium"
+    stream_id=$(echo "$line" | awk '{print $1}' | tr -d '.')
+    [[ -z "$stream_id" ]] || [[ ! "$stream_id" =~ ^[0-9]+$ ]] && continue
+
+    # Get info for this stream
+    info=$(get_stream_info "$stream_id")
+    [[ -z "$info" ]] && continue
+
+    # Store all streams (not just latest per app)
+    streams+=("$info")
+done < <(wpctl status | sed -n '/Streams:/,/^$/p' | grep -E "^\s+[0-9]+\.")
+
+# Output JSON array of all streams
+output="["
+first=true
+
+for stream_info in "${streams[@]}"; do
+    IFS=':' read -r app sid vol muted pid title <<< "$stream_info"
+
+    # Escape title for JSON
+    title=$(echo "$title" | sed 's/"/\\"/g')
+
+    [[ "$first" == false ]] && output+=","
+    output+="{\"app\":\"$app\",\"stream_id\":$sid,\"volume\":$vol,\"muted\":$muted,\"pid\":$pid,\"title\":\"$title\"}"
+    first=false
+done
+
+output+="]"
+echo "$output"

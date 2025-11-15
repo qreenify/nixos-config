@@ -3,7 +3,7 @@ Version=1.0
 Type=Application
 Name=Apple Music
 Comment=Apple Music PWA
-Exec=brave --new-window --app=https://music.apple.com --user-data-dir=/home/qreenify/.config/brave-apple-music
+Exec=env PULSE_PROP_application.name="Apple Music" brave --new-window --app=https://music.apple.com --user-data-dir=/home/qreenify/.config/brave-apple-music
 Icon=music
 Terminal=false
 Categories=Audio;Music;

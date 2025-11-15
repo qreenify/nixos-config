@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# Update cache of app -> stream ID mappings
+# This runs on audio events, not every keypress
+
+CACHE_DIR="/tmp/app-volume-cache-$USER"
+mkdir -p "$CACHE_DIR"
+
+# Clear old cache
+rm -f "$CACHE_DIR"/*
+
+# Use the existing monitor to get all streams
+MONITOR_SCRIPT="${HOME}/.config/nixos/scripts/app-volume-monitor-multi"
+[[ ! -x "$MONITOR_SCRIPT" ]] && MONITOR_SCRIPT="${HOME}/.script/app-volume-monitor-multi"
+
+# Get all streams and cache by app
+"$MONITOR_SCRIPT" 2>/dev/null | jq -c '.[]' 2>/dev/null | while IFS= read -r stream; do
+    app=$(echo "$stream" | jq -r '.app' 2>/dev/null)
+    stream_id=$(echo "$stream" | jq -r '.stream_id' 2>/dev/null)
+
+    [[ -z "$app" ]] || [[ "$app" == "null" ]] && continue
+    [[ -z "$stream_id" ]] || [[ "$stream_id" == "null" ]] && continue
+
+    # Map app names to cache files
+    case "$app" in
+        vesktop)
+            echo "$stream_id" >> "$CACHE_DIR/vesktop"
+            ;;
+        youtube)
+            echo "$stream_id" >> "$CACHE_DIR/youtube"
+            ;;
+        twitch)
+            echo "$stream_id" >> "$CACHE_DIR/twitch"
+            ;;
+        apple-music)
+            echo "$stream_id" >> "$CACHE_DIR/music"
+            ;;
+        plex|jellyfin)
+            echo "$stream_id" >> "$CACHE_DIR/music"
+            ;;
+    esac
+done

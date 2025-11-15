@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+# Show fuzzel menu to toggle mute for individual apps
+
+MONITOR_SCRIPT="${HOME}/.config/nixos/scripts/app-volume-monitor-multi"
+[[ ! -x "$MONITOR_SCRIPT" ]] && MONITOR_SCRIPT="${HOME}/.script/app-volume-monitor-multi"
+
+# Get all streams
+streams=$("$MONITOR_SCRIPT" 2>/dev/null)
+
+# Build menu items
+menu_items=()
+declare -A stream_map
+
+while IFS= read -r stream; do
+    app=$(echo "$stream" | jq -r '.app' 2>/dev/null)
+    vol=$(echo "$stream" | jq -r '.volume' 2>/dev/null)
+    muted=$(echo "$stream" | jq -r '.muted' 2>/dev/null)
+    title=$(echo "$stream" | jq -r '.title' 2>/dev/null)
+    stream_id=$(echo "$stream" | jq -r '.stream_id' 2>/dev/null)
+
+    [[ -z "$app" ]] || [[ "$app" == "null" ]] && continue
+
+    # Format app name nicely
+    case "$app" in
+        vesktop) app_name="Discord" ;;
+        youtube) app_name="YouTube" ;;
+        twitch) app_name="Twitch" ;;
+        apple-music) app_name="Apple Music" ;;
+        plex) app_name="Plex" ;;
+        jellyfin) app_name="Jellyfin" ;;
+        generic-*) app_name=$(echo "$app" | sed 's/generic-//;s/.*/\u&/') ;;
+        *) app_name="${app^}" ;;
+    esac
+
+    # Add mute status indicator
+    if [[ "$muted" == "true" ]]; then
+        status="🔇 MUTED"
+    else
+        status="🔊 ${vol}%"
+    fi
+
+    # Create menu item
+    menu_text="${app_name}: ${status}"
+    [[ -n "$title" ]] && [[ "$title" != "Unknown" ]] && [[ "$title" != "null" ]] && menu_text+=" - $title"
+
+    menu_items+=("$menu_text")
+    stream_map["$menu_text"]="$stream_id"
+done < <(echo "$streams" | jq -c '.[]' 2>/dev/null)
+
+# Show fuzzel menu
+if [ ${#menu_items[@]} -eq 0 ]; then
+    notify-send "No audio streams" "No apps are currently playing audio"
+    exit 0
+fi
+
+selected=$(printf '%s\n' "${menu_items[@]}" | fuzzel --dmenu --prompt="Toggle mute: ")
+
+# Toggle mute for selected stream
+if [[ -n "$selected" ]]; then
+    stream_id="${stream_map[$selected]}"
+    if [[ -n "$stream_id" ]]; then
+        wpctl set-mute "$stream_id" toggle
+        # Signal waybar to update
+        pkill -RTMIN+8 waybar 2>/dev/null
+    fi
+fi

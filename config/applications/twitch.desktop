@@ -3,7 +3,7 @@ Version=1.0
 Type=Application
 Name=Twitch
 Comment=Twitch PWA
-Exec=brave --new-window --app=https://twitch.tv --user-data-dir=/home/qreenify/.config/brave-twitch
+Exec=env PULSE_PROP_application.name="Twitch" brave --new-window --app=https://twitch.tv --user-data-dir=/home/qreenify/.config/brave-twitch
 Icon=twitch
 Terminal=false
 Categories=Video;AudioVideo;

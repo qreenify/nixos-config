@@ -57,24 +57,42 @@ window#waybar {
 }
 
 #tray {
-    transition: opacity 0.3s;
+    padding: 0 8px;
+    margin-right: 5px;
+    border-radius: 4px;
+    background-color: transparent;
+    transition: background-color 0.3s ease;
 }
 
-#tray:not(:hover) > * {
-    opacity: 0;
-    min-width: 0;
+#tray:hover {
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
-#tray:hover > * {
+#tray > * {
     opacity: 1;
     min-width: 18px;
 }
 
 /* App Volume Indicators */
 #custom-app-volumes {
-    padding: 0 10px;
-    font-size: 18px;
+    padding: 0 3px;
+    margin-right: 0;
+    font-size: 12px;  /* Small percentage text */
     color: @foreground;
+    opacity: 0;  /* Default: completely invisible */
+    transition: opacity 0.75s ease-out;  /* Faster fade */
+}
+
+/* Changing state - fully visible with instant fade-in */
+#custom-app-volumes.changing {
+    opacity: 1;
+    transition: opacity 0.1s ease-in;
+}
+
+/* Hover state - fully visible */
+#custom-app-volumes:hover {
+    opacity: 1;
+    transition: opacity 0.3s ease-in;
 }
 EOF
 

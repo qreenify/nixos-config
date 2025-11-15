@@ -7,9 +7,41 @@ MONITOR_SCRIPT="${HOME}/.script/app-volume-monitor"
 # Run monitor once and build output
 json=$("$MONITOR_SCRIPT")
 
+# Track volume changes to highlight when changing
+STATE_FILE="/tmp/app-volume-state-$USER"
+CHANGE_DURATION=2  # seconds to keep "changing" class active
+
 text=""
 tooltip=""
 class="app-volumes"
+
+# Read previous state
+prev_state=""
+if [[ -f "$STATE_FILE" ]]; then
+    prev_state=$(cat "$STATE_FILE")
+fi
+
+# Check if volumes changed
+current_state="$json"
+changed=false
+if [[ "$prev_state" != "$current_state" ]] && [[ -n "$prev_state" ]]; then
+    changed=true
+    echo "$(date +%s)" > "${STATE_FILE}.timestamp"
+fi
+
+# Check if we're still in the "changing" window
+if [[ -f "${STATE_FILE}.timestamp" ]]; then
+    last_change=$(cat "${STATE_FILE}.timestamp" 2>/dev/null)
+    now=$(date +%s)
+    if [[ -n "$last_change" ]] && (( now - last_change < CHANGE_DURATION )); then
+        class="changing"
+    else
+        rm -f "${STATE_FILE}.timestamp"
+    fi
+fi
+
+# Save current state
+echo "$current_state" > "$STATE_FILE"
 
 # Check each app - order: YouTube, Twitch, Apple Music, Plex, Jellyfin, Vesktop (left to right)
 for app in youtube twitch apple-music plex jellyfin vesktop; do

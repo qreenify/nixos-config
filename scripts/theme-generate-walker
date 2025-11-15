@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# Generate walker.css files for all themes using @define-color format
+
+THEMES_DIR="$HOME/.config/theme/themes"
+
+for THEME_PATH in "$THEMES_DIR"/*; do
+  if [[ ! -d "$THEME_PATH" ]]; then
+    continue
+  fi
+
+  THEME_NAME=$(basename "$THEME_PATH")
+  ALACRITTY_FILE="$THEME_PATH/alacritty.toml"
+
+  if [[ ! -f "$ALACRITTY_FILE" ]]; then
+    echo "⚠️  Skipping $THEME_NAME - no alacritty.toml found"
+    continue
+  fi
+
+  # Extract colors from alacritty.toml
+  BG=$(grep 'background = ' "$ALACRITTY_FILE" | head -1 | sed 's/.*= "\([^"]*\)".*/\1/')
+  FG=$(grep 'foreground = ' "$ALACRITTY_FILE" | head -1 | sed 's/.*= "\([^"]*\)".*/\1/')
+  BLUE=$(grep 'blue = ' "$ALACRITTY_FILE" | head -1 | sed 's/.*= "\([^"]*\)".*/\1/')
+  MAGENTA=$(grep 'magenta = ' "$ALACRITTY_FILE" | head -1 | sed 's/.*= "\([^"]*\)".*/\1/')
+
+  # Use blue as border, fallback to magenta
+  BORDER="${BLUE:-$MAGENTA}"
+
+  # Generate walker.css with @define-color format
+  cat > "$THEME_PATH/walker.css" << EOF
+@define-color selected-text ${BORDER};
+@define-color text ${FG};
+@define-color base ${BG};
+@define-color border ${BORDER};
+@define-color foreground ${FG};
+@define-color background ${BG};
+EOF
+
+  echo "✓ Generated walker.css for $THEME_NAME"
+done
+
+echo ""
+echo "✅ All walker.css files regenerated!"
