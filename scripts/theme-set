@@ -6,8 +6,8 @@ if [[ -z $1 ]]; then
   exit 1
 fi
 
-THEMES_DIR="$HOME/.config/theme-system/themes"
-CURRENT_THEME_DIR="$HOME/.config/theme-system/current/theme"
+THEMES_DIR="$HOME/.config/theme/themes"
+CURRENT_THEME_DIR="$HOME/.config/theme/current/theme"
 
 THEME_NAME=$(echo "$1" | sed -E 's/<[^>]+>//g' | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
 THEME_PATH="$THEMES_DIR/$THEME_NAME"

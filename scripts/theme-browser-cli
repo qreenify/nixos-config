@@ -2,8 +2,8 @@
 # CLI Theme Browser for Theme
 # Simple alternative to GTK version
 
-THEMES_DIR="$HOME/.config/theme-system/themes"
-CURRENT_LINK="$HOME/.config/theme-system/current/theme"
+THEMES_DIR="$HOME/.config/theme/themes"
+CURRENT_LINK="$HOME/.config/theme/current/theme"
 
 # Check if themes exist
 if [ ! -d "$THEMES_DIR" ]; then
@@ -58,7 +58,7 @@ SELECTED="${THEMES[$((choice-1))]}"
 # Apply theme immediately
 echo ""
 echo "Applying theme: $SELECTED"
-~/.local/share/theme-system/bin/theme-set "$SELECTED"
+~/.local/share/theme/bin/theme-set "$SELECTED"
 
 echo ""
 echo "✅ Theme applied: $SELECTED"

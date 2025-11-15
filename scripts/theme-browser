@@ -18,8 +18,8 @@ class ThemeBrowser(Gtk.Window):
         self.set_position(Gtk.WindowPosition.CENTER)
 
         # Paths
-        self.themes_dir = Path.home() / ".config/theme-system/themes"
-        self.current_link = Path.home() / ".config/theme-system/current/theme"
+        self.themes_dir = Path.home() / ".config/theme/themes"
+        self.current_link = Path.home() / ".config/theme/current/theme"
 
         # Check if themes exist
         if not self.themes_dir.exists():

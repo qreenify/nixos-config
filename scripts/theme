@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Direct theme switcher - accepts theme name as argument or shows menu
 
-THEMES_DIR="$HOME/.config/theme-system/themes"
-CURRENT_LINK="$HOME/.config/theme-system/current/theme"
+THEMES_DIR="$HOME/.config/theme/themes"
+CURRENT_LINK="$HOME/.config/theme/current/theme"
 
 # If argument provided, apply directly
 if [ -n "$1" ]; then

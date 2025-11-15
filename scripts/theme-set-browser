@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # NixOS-compatible browser theming (without root access)
 
-CHROMIUM_THEME=~/.config/theme-system/current/theme/chromium.theme
+CHROMIUM_THEME=~/.config/theme/current/theme/chromium.theme
 
 if [[ -f $CHROMIUM_THEME ]]; then
   THEME_RGB_COLOR=$(<$CHROMIUM_THEME)
@@ -13,7 +13,7 @@ else
 fi
 
 # Determine light/dark mode
-if [[ -f ~/.config/theme-system/current/theme/light.mode ]]; then
+if [[ -f ~/.config/theme/current/theme/light.mode ]]; then
   COLOR_SCHEME="light"
 else
   COLOR_SCHEME="dark"

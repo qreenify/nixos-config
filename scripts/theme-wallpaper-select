@@ -5,11 +5,11 @@
 if [[ -n "$1" ]]; then
   THEME_NAME="$1"
 else
-  THEME_LINK=$(readlink -f ~/.config/theme-system/current/theme)
+  THEME_LINK=$(readlink -f ~/.config/theme/current/theme)
   THEME_NAME=$(basename "$THEME_LINK")
 fi
 
-WALLPAPER_DIR="$HOME/.config/theme-system/themes/$THEME_NAME/backgrounds"
+WALLPAPER_DIR="$HOME/.config/theme/themes/$THEME_NAME/backgrounds"
 
 if [[ ! -d "$WALLPAPER_DIR" ]]; then
   echo "❌ No wallpapers found for theme '$THEME_NAME'"

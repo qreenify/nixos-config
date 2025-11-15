@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Vesktop/Vencord theme sync with omarchy
 
-THEME_DIR="$HOME/.config/theme-system/current/theme"
+THEME_DIR="$HOME/.config/theme/current/theme"
 VESKTOP_QUICKCSS="$HOME/.config/vesktop/settings/quickCss.css"
 
 # Check if Vesktop config exists

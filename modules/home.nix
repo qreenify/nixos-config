@@ -18,8 +18,8 @@
       }
     '';
     envFile.text = ''
-      # Add custom scripts and theme-system bin to PATH (custom scripts first to override)
-      $env.PATH = ($env.PATH | split row (char esep) | prepend $"($env.HOME)/.script" | prepend $"($env.HOME)/.local/share/theme-system/bin")
+      # Add custom scripts and theme bin to PATH (custom scripts first to override)
+      $env.PATH = ($env.PATH | split row (char esep) | prepend $"($env.HOME)/.script" | prepend $"($env.HOME)/.local/share/theme/bin")
     '';
     shellAliases = {
       n = "nvim";
@@ -395,9 +395,9 @@
     QT_STYLE_OVERRIDE = "adwaita-dark";
   };
 
-  # Add theme-system bin to PATH
+  # Add theme bin to PATH
   home.sessionPath = [
-    "$HOME/.local/share/theme-system/bin"
+    "$HOME/.local/share/theme/bin"
   ];
 
   # === Scripts Installation ===
@@ -405,20 +405,20 @@
   home.file.".script".recursive = true;
 
   # === Theme System Installation ===
-  home.file.".local/share/theme-system/bin".source = ../theme-system/bin;
-  home.file.".local/share/theme-system/default".source = ../theme-system/default;
-  home.file.".config/walker".source = ../theme-system/config/walker;
+  home.file.".local/share/theme/bin".source = ../theme/bin;
+  home.file.".local/share/theme/default".source = ../theme/default;
+  home.file.".config/walker".source = ../theme/config/walker;
   home.file.".config/walker".recursive = true;  # Make writable so walker can create default theme
-  home.file.".config/elephant".source = ../theme-system/config/elephant;
-  home.file.".config/theme-system/themes" = {
-    source = ../theme-system/themes;
+  home.file.".config/elephant".source = ../theme/config/elephant;
+  home.file.".config/theme/themes" = {
+    source = ../theme/themes;
     recursive = true;
     force = true;  # Allow overwriting existing theme files
   };
 
   # Set base as the default theme
-  home.file.".config/theme-system/current/theme" = {
-    source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/theme-system/themes/base";
+  home.file.".config/theme/current/theme" = {
+    source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/theme/themes/base";
     force = true;  # Overwrite existing symlink
   };
 
@@ -426,11 +426,11 @@
   home.activation.initAlacrittyTheme = config.lib.dag.entryAfter ["writeBoundary"] ''
     if [ ! -f "$HOME/.config/alacritty/theme.toml" ]; then
       $DRY_RUN_CMD mkdir -p "$HOME/.config/alacritty"
-      $DRY_RUN_CMD cp "$HOME/.config/theme-system/themes/base/alacritty.toml" "$HOME/.config/alacritty/theme.toml" || true
+      $DRY_RUN_CMD cp "$HOME/.config/theme/themes/base/alacritty.toml" "$HOME/.config/alacritty/theme.toml" || true
     fi
   '';
 
-  # Themes are declaratively managed from ~/.config/nixos/theme-system/themes
+  # Themes are declaratively managed from ~/.config/nixos/theme/themes
   # Theme switching done via "theme" command
 
   # === Font Configuration ===

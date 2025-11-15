@@ -399,7 +399,7 @@ Edit `modules/home.nix` to set your default theme on login.
 - **Hyprland**: Edit `config/hypr/hyprland.conf`
 
 ### Create New Theme
-1. Create directory: `theme-system/themes/my-theme/`
+1. Create directory: `theme/themes/my-theme/`
 2. Add theme files (see existing themes for reference)
 3. Run `./rebuild.sh` to deploy
 4. Switch with `theme my-theme`
@@ -425,10 +425,10 @@ which chafa
 
 ```bash
 # Check theme symlink
-readlink ~/.config/theme-system/current/theme
+readlink ~/.config/theme/current/theme
 
 # Ensure scripts are in PATH
-echo $PATH | grep theme-system
+echo $PATH | grep theme
 
 # Log out and back in after rebuild
 ```

@@ -39,10 +39,10 @@ if [ -d "$CONFIG_DIR/scripts" ]; then
     sudo cp -r "$CONFIG_DIR/scripts" "$TARGET/"
 fi
 
-# Copy theme-system directory (if exists)
-if [ -d "$CONFIG_DIR/theme-system" ]; then
-    echo "🎨 Copying theme-system/..."
-    sudo cp -r "$CONFIG_DIR/theme-system" "$TARGET/"
+# Copy theme directory (if exists)
+if [ -d "$CONFIG_DIR/theme" ]; then
+    echo "🎨 Copying theme/..."
+    sudo cp -r "$CONFIG_DIR/theme" "$TARGET/"
 fi
 
 # Copy hardware-configuration.nix (if exists)

@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-sudo cp -f ~/.local/share/theme-system/default/pacman/mirrorlist /etc/pacman.d/mirrorlist

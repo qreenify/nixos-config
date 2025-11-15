@@ -181,7 +181,7 @@ sudo nixos-rebuild switch --flake /etc/nixos#nixos
 
 All 13 themes are declaratively managed and work with both compositors. To add a new theme:
 
-1. Create directory in `~/.config/nixos/theme-system/themes/your-theme-name/`
+1. Create directory in `~/.config/nixos/theme/themes/your-theme-name/`
 2. Add theme files (walker.css, waybar.css, niri.kdl, hyprland.conf, alacritty.toml, etc.)
 3. Rebuild to deploy: `~/.config/nixos/rebuild.sh`
 4. Select with `theme` command
@@ -215,12 +215,12 @@ All themes support:
 - Waybar is started by Hyprland autostart.sh
 
 ### Theme Not Working
-- Ensure symlink exists: `readlink ~/.config/theme-system/current/theme`
-- Check scripts are in PATH: `echo $PATH | grep theme-system`
+- Ensure symlink exists: `readlink ~/.config/theme/current/theme`
+- Check scripts are in PATH: `echo $PATH | grep theme`
 - After rebuild, log out and back in for PATH changes
 
 ### Theme Scripts Not Found
-- Rebuild to deploy scripts to `~/.local/share/theme-system/bin/`
+- Rebuild to deploy scripts to `~/.local/share/theme/bin/`
 - Log out and log back in (PATH updated by home-manager)
 
 ## Key Keybindings

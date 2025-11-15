@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # One-time setup script for themes
-# Copies themes from git repo to ~/.config/theme-system/themes/
+# Copies themes from git repo to ~/.config/theme/themes/
 # Sets up default theme symlink
 
 set -e
 
-THEMES_SRC="$HOME/.config/nixos/theme-system/themes"
-THEMES_DEST="$HOME/.config/theme-system/themes"
-CURRENT_LINK="$HOME/.config/theme-system/current/theme"
+THEMES_SRC="$HOME/.config/nixos/theme/themes"
+THEMES_DEST="$HOME/.config/theme/themes"
+CURRENT_LINK="$HOME/.config/theme/current/theme"
 DEFAULT_THEME="tokyo-night"
 
 echo "🎨 Theme Theme Setup"
@@ -28,7 +28,7 @@ fi
 
 # Copy themes
 echo "📥 Copying themes from $THEMES_SRC"
-mkdir -p "$HOME/.config/theme-system"
+mkdir -p "$HOME/.config/theme"
 cp -r "$THEMES_SRC" "$THEMES_DEST"
 chmod -R u+w "$THEMES_DEST"
 
