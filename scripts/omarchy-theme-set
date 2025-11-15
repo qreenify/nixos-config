@@ -25,14 +25,14 @@ ln -nsf "$THEME_PATH" "$CURRENT_THEME_DIR"
 
 # === App-specific theming ===
 
-# 1. Waybar - link style and force restart
+# 1. Waybar - generate CSS from theme and restart
 mkdir -p ~/.config/waybar
-ln -nsf ~/.config/omarchy/current/theme/waybar.css ~/.config/waybar/style.css
+~/.script/generate-waybar-style >/dev/null 2>&1
 if pgrep waybar >/dev/null; then
   pkill waybar
   sleep 0.3
   waybar >/dev/null 2>&1 &
-  echo "  ✓ Waybar restarted"
+  echo "  ✓ Waybar restarted with new theme"
 fi
 
 # 2. Hyprland - reload for border colors
@@ -126,12 +126,10 @@ if [[ -d "$WALLPAPER_DIR" ]]; then
   # Find first image in backgrounds directory
   WALLPAPER=$(find "$WALLPAPER_DIR" -type f \( -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" \) | head -1)
   if [[ -n "$WALLPAPER" ]]; then
-    # Set wallpaper using hyprpaper or swaybg
+    # Set wallpaper using swaybg (kill all instances first)
     if command -v hyprctl >/dev/null 2>&1; then
-      # For Hyprland, use hyprpaper or swaybg
-      if pgrep -x swaybg >/dev/null; then
-        pkill swaybg
-      fi
+      pkill -9 swaybg 2>/dev/null
+      sleep 0.2
       swaybg -i "$WALLPAPER" -m fill >/dev/null 2>&1 &
       echo "  ✓ Wallpaper set: $(basename "$WALLPAPER")"
     fi
