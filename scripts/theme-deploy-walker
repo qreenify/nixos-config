@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Deploy walker theme from current theme to ~/.config/walker/themes/current.css
+# Walker expects FLAT file structure: themes/NAME.css (not themes/NAME/style.css)
+
+CURRENT_THEME_DIR="$HOME/.config/theme/current/theme"
+WALKER_THEME_FILE="$HOME/.config/walker/themes/current.css"
+TEMPLATE_FILE="$HOME/.local/share/theme/default/walker/theme-template.css"
+
+# Ensure walker themes directory exists
+mkdir -p "$HOME/.config/walker/themes"
+
+# Check if walker.css exists in current theme
+if [[ ! -f "$CURRENT_THEME_DIR/walker.css" ]]; then
+  echo "⚠️  No walker.css found in current theme"
+  exit 1
+fi
+
+# Combine color definitions from theme with template structure
+{
+  cat "$CURRENT_THEME_DIR/walker.css"
+  echo ""
+  cat "$TEMPLATE_FILE"
+} > "$WALKER_THEME_FILE"
+
+echo "✓ Walker theme deployed to $WALKER_THEME_FILE"

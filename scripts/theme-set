@@ -51,7 +51,8 @@ if command -v makoctl >/dev/null 2>&1; then
   fi
 fi
 
-# 4. Walker - auto-detects theme changes via @import in style.css (no action needed)
+# 4. Walker - deploy theme to ~/.config/walker/themes/current.css
+~/.script/theme-deploy-walker >/dev/null 2>&1 && echo "  ✓ Walker theme deployed"
 
 # 5. Alacritty - copy theme to trigger reload (symlink changes don't trigger reload)
 if [[ -f "$THEME_PATH/alacritty.toml" ]]; then

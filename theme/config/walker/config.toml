@@ -1,7 +1,6 @@
 force_keyboard_focus = true                                                 # forces keyboard forcus to stay in Walker
 selection_wrap = true                                                       # wrap list if at bottom or top
-theme = "default"                                                           # theme to use (managed by theme-set script)
-additional_theme_location = "~/.config/walker/themes/"
+theme = "current"                                                           # theme to use (managed by theme-set script)
 
 [placeholders]
 "default" = { input = " Search...", list = "No Results" } # placeholders for input and empty list, key is the providers name, so f.e. "desktopapplications" or "menus:other"

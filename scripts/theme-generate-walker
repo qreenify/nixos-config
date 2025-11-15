@@ -16,17 +16,18 @@ for THEME_PATH in "$THEMES_DIR"/*; do
     continue
   fi
 
-  # Extract colors from alacritty.toml
-  BG=$(grep 'background = ' "$ALACRITTY_FILE" | head -1 | sed 's/.*= "\([^"]*\)".*/\1/')
-  FG=$(grep 'foreground = ' "$ALACRITTY_FILE" | head -1 | sed 's/.*= "\([^"]*\)".*/\1/')
-  BLUE=$(grep 'blue = ' "$ALACRITTY_FILE" | head -1 | sed 's/.*= "\([^"]*\)".*/\1/')
-  MAGENTA=$(grep 'magenta = ' "$ALACRITTY_FILE" | head -1 | sed 's/.*= "\([^"]*\)".*/\1/')
+  # Extract colors from alacritty.toml (handle both single and double quotes)
+  BG=$(grep 'background = ' "$ALACRITTY_FILE" | head -1 | sed "s/.*= ['\"]\\([^'\"]*\\)['\"].*/\\1/")
+  FG=$(grep 'foreground = ' "$ALACRITTY_FILE" | head -1 | sed "s/.*= ['\"]\\([^'\"]*\\)['\"].*/\\1/")
+  BLUE=$(grep 'blue = ' "$ALACRITTY_FILE" | head -1 | sed "s/.*= ['\"]\\([^'\"]*\\)['\"].*/\\1/")
+  MAGENTA=$(grep 'magenta = ' "$ALACRITTY_FILE" | head -1 | sed "s/.*= ['\"]\\([^'\"]*\\)['\"].*/\\1/")
 
   # Use blue as border, fallback to magenta
   BORDER="${BLUE:-$MAGENTA}"
 
-  # Generate walker.css with @define-color format
+  # Generate walker.css with correct @define-color format (no extra syntax)
   cat > "$THEME_PATH/walker.css" << EOF
+/* Walker theme colors - auto-generated from alacritty.toml */
 @define-color selected-text ${BORDER};
 @define-color text ${FG};
 @define-color base ${BG};
