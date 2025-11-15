@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# Sync themes from external source (git repo or archive)
+# This avoids rebuilding NixOS every time themes change
+
+THEME_DIR="$HOME/.config/theme/themes"
+THEME_REPO="https://github.com/basecamp/omarchy.git"  # Official omarchy themes
+CACHE_DIR="$HOME/.cache/theme-sync"
+
+echo "🎨 Theme Sync Tool"
+echo ""
+
+# Create directories
+mkdir -p "$THEME_DIR"
+mkdir -p "$CACHE_DIR"
+
+# Check if themes directory is empty (fresh install)
+if [ -z "$(ls -A "$THEME_DIR" 2>/dev/null)" ] || [ "$1" = "--force" ]; then
+  echo "📥 Downloading themes..."
+
+  # Clone or update omarchy repo
+  if [ -d "$CACHE_DIR/omarchy" ]; then
+    echo "  Updating cached themes..."
+    cd "$CACHE_DIR/omarchy" && git pull
+  else
+    echo "  Cloning theme repository..."
+    git clone --depth=1 "$THEME_REPO" "$CACHE_DIR/omarchy"
+  fi
+
+  # Copy themes (excluding base, which is managed by NixOS)
+  echo "  Installing themes..."
+  rsync -av --exclude='.git' "$CACHE_DIR/omarchy/themes/" "$THEME_DIR/" 2>/dev/null || \
+    cp -r "$CACHE_DIR/omarchy/themes/"* "$THEME_DIR/" 2>/dev/null
+
+  echo "✅ Themes installed to $THEME_DIR"
+  echo "   Found $(ls -1 "$THEME_DIR" | wc -l) themes"
+else
+  echo "ℹ️  Themes already installed. Use --force to re-sync."
+fi
+
+echo ""
+echo "Available commands:"
+echo "  theme <name>       - Switch theme"
+echo "  wallpaper          - Select wallpaper"
+echo "  theme-sync --force - Re-download all themes"

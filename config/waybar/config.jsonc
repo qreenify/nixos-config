@@ -87,6 +87,8 @@
     "dynamic-order": ["title", "artist"],
     "dynamic-separator": " - ",
     "max-length": 50,
-    "ignored-players": []
+    "ignored-players": [],
+    "interval": 2,
+    "tooltip": false
   }
 }

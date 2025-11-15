@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# Control Vesktop (Discord) volume specifically
+
+ACTION="$1"  # up, down, or mute
+
+# Find Vesktop's sink-input ID
+# Look for "vesktop" or "Vesktop" in the application name
+SINK_INPUT=$(wpctl status | grep -i "vesktop" | grep -oP '^\s*\K\d+' | head -1)
+
+if [ -z "$SINK_INPUT" ]; then
+    # If not found, try looking for Discord
+    SINK_INPUT=$(wpctl status | grep -i "discord" | grep -oP '^\s*\K\d+' | head -1)
+fi
+
+if [ -z "$SINK_INPUT" ]; then
+    notify-send "Vesktop Volume" "Vesktop not found" -t 2000
+    exit 1
+fi
+
+case "$ACTION" in
+    up)
+        wpctl set-volume -l 1.0 "$SINK_INPUT" 5%+
+        VOLUME=$(wpctl get-volume "$SINK_INPUT" | awk '{print int($2 * 100)}')
+        notify-send "Vesktop Volume" "Volume: ${VOLUME}%" -t 1000
+        ;;
+    down)
+        wpctl set-volume "$SINK_INPUT" 5%-
+        VOLUME=$(wpctl get-volume "$SINK_INPUT" | awk '{print int($2 * 100)}')
+        notify-send "Vesktop Volume" "Volume: ${VOLUME}%" -t 1000
+        ;;
+    mute)
+        wpctl set-mute "$SINK_INPUT" toggle
+        MUTED=$(wpctl get-volume "$SINK_INPUT" | grep -q "MUTED" && echo "Muted" || echo "Unmuted")
+        notify-send "Vesktop Volume" "$MUTED" -t 1000
+        ;;
+    *)
+        echo "Usage: $0 {up|down|mute}"
+        exit 1
+        ;;
+esac

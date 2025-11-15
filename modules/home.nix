@@ -26,6 +26,7 @@
       rebuild = "~/.config/nixos/rebuild.sh";
       deploy = "~/.config/nixos/deploy.sh";
       theme = "~/.script/theme";  # Direct theme switcher with argument support
+      theme-sync = "~/.script/theme-sync";  # Download/update themes from external source
       wallpaper = "~/.script/theme-wallpaper-select";  # Interactive wallpaper selector
       gdrive-start = "systemctl --user start rclone-gdrive";
       gdrive-stop = "systemctl --user stop rclone-gdrive";
@@ -431,6 +432,28 @@
   home.sessionVariables = {
     GTK_THEME = "Adwaita:dark";
     QT_STYLE_OVERRIDE = "adwaita-dark";
+    # Fix Chromium/Brave crash when moving between monitors on Hyprland
+    # https://github.com/hyprwm/Hyprland/issues/11957
+    NIXOS_OZONE_WL = "1";  # Enable Wayland support
+  };
+
+  # Chromium browser flags (applies to Chrome, Chromium, Brave, etc.)
+  home.file.".config/chromium-flags.conf" = {
+    text = ''
+      --disable-features=WaylandWpColorManagerV1
+      --enable-features=UseOzonePlatform
+      --ozone-platform=wayland
+    '';
+    force = true;
+  };
+
+  home.file.".config/brave-flags.conf" = {
+    text = ''
+      --disable-features=WaylandWpColorManagerV1
+      --enable-features=UseOzonePlatform
+      --ozone-platform=wayland
+    '';
+    force = true;
   };
 
   # Add theme bin to PATH
@@ -448,8 +471,10 @@
   home.file.".config/walker".source = ../theme/config/walker;
   home.file.".config/walker".recursive = true;  # Make writable so walker can create default theme
   home.file.".config/elephant".source = ../theme/config/elephant;
-  home.file.".config/theme/themes" = {
-    source = ../theme/themes;
+
+  # Only deploy base theme to nix store (other themes synced via theme-sync script)
+  home.file.".config/theme/themes/base" = {
+    source = ../theme/themes/base;
     recursive = true;
     force = true;  # Allow overwriting existing theme files
   };
