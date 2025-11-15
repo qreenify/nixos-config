@@ -59,16 +59,16 @@ window#waybar {
 #tray {
     padding: 0 8px;
     margin-right: 5px;
-}
-
-#tray > * {
     opacity: 0;
-    min-width: 18px;
     transition: opacity 0.3s ease;
 }
 
-#tray:hover > * {
+#tray:hover {
     opacity: 1;
+}
+
+#tray > * {
+    min-width: 18px;
 }
 
 /* App Volume Indicators */

@@ -24,7 +24,7 @@ scrollbar {
 #box {
   border-radius: 2px;
   background: @background;
-  padding: 32px;
+  padding: 20px;
   border: 2px solid @border;
   box-shadow:
     0 19px 38px rgba(0, 0, 0, 0.3),
@@ -37,7 +37,8 @@ scrollbar {
     0 1px 3px rgba(0, 0, 0, 0.1),
     0 1px 2px rgba(0, 0, 0, 0.22);
   background: lighter(@background);
-  padding: 8px;
+  padding: 6px 8px;
+  margin-bottom: 8px;
 }
 
 /* Input field */
@@ -72,15 +73,15 @@ scrollbar {
   opacity: 0.8;
 }
 
-/* List items */
+/* List items - compact styling */
 child {
-  padding: 8px;
+  padding: 4px 8px;
   border-radius: 2px;
 }
 
 child:selected,
 child:hover {
-  background: alpha(@border, 0.4);
+  background: alpha(@border, 0.2);
 }
 
 child:selected * {
@@ -89,11 +90,11 @@ child:selected * {
 
 /* Item components */
 #item {
-  padding-left: 14px;
+  padding-left: 8px;
 }
 
 #text {
-  padding: 14px 0;
+  padding: 6px 0;
 }
 
 #label {
@@ -101,13 +102,16 @@ child:selected * {
 }
 
 #sub {
-  opacity: 0.5;
-  font-size: 0.8em;
+  opacity: 0;
+  font-size: 0px;
+  min-height: 0px;
+  margin: 0px;
+  padding: 0px;
 }
 
 #icon {
-  margin-right: 14px;
-  -gtk-icon-transform: scale(0.9);
+  margin-right: 10px;
+  -gtk-icon-transform: scale(0.85);
 }
 
 .current {
