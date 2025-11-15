@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# Control Twitch (PWA) volume specifically
+
+ACTION="$1"  # up, down, or mute
+
+# Find ALL Twitch sink-input IDs
+# Twitch PWA runs in browser, identify by checking for twitch in command line
+SINK_INPUTS=()
+for stream in $(wpctl status | grep -A 50 "Streams:" | grep -oP '^\s*\K\d+(?=\.)'); do
+    # Get the process ID for this stream
+    PID=$(pw-cli info "$stream" 2>/dev/null | grep "application.process.id" | grep -oP '"\K[0-9]+')
+
+    if [ -n "$PID" ]; then
+        # Check if this process has twitch in its command line
+        if grep -qi "twitch" /proc/"$PID"/cmdline 2>/dev/null; then
+            SINK_INPUTS+=("$stream")
+        fi
+    fi
+done
+
+if [ ${#SINK_INPUTS[@]} -eq 0 ]; then
+    notify-send "Twitch Volume" "Twitch not found (make sure it's playing audio)" -t 2000
+    exit 1
+fi
+
+case "$ACTION" in
+    up)
+        for SINK_INPUT in "${SINK_INPUTS[@]}"; do
+            wpctl set-volume -l 1.0 "$SINK_INPUT" 5%+
+        done
+        # Get volume from first stream for display
+        VOLUME=$(wpctl get-volume "${SINK_INPUTS[0]}" | awk '{print int($2 * 100)}')
+        notify-send "Twitch Volume" "Volume: ${VOLUME}%" -t 1000
+        ;;
+    down)
+        for SINK_INPUT in "${SINK_INPUTS[@]}"; do
+            wpctl set-volume "$SINK_INPUT" 5%-
+        done
+        # Get volume from first stream for display
+        VOLUME=$(wpctl get-volume "${SINK_INPUTS[0]}" | awk '{print int($2 * 100)}')
+        notify-send "Twitch Volume" "Volume: ${VOLUME}%" -t 1000
+        ;;
+    mute)
+        for SINK_INPUT in "${SINK_INPUTS[@]}"; do
+            wpctl set-mute "$SINK_INPUT" toggle
+        done
+        # Get mute status from first stream for display
+        MUTED=$(wpctl get-volume "${SINK_INPUTS[0]}" | grep -q "MUTED" && echo "Muted" || echo "Unmuted")
+        notify-send "Twitch Volume" "$MUTED" -t 1000
+        ;;
+    *)
+        echo "Usage: $0 {up|down|mute}"
+        exit 1
+        ;;
+esac
