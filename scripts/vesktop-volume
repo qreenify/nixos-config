@@ -3,37 +3,44 @@
 
 ACTION="$1"  # up, down, or mute
 
-# Find Vesktop's sink-input ID
-# Vesktop runs as Electron, so we search for streams from the electron binary
-SINK_INPUT=$(
-    for stream in $(wpctl status | grep -A 50 "Streams:" | grep -oP '^\s*\K\d+(?=\.)'); do
-        # Check if this stream belongs to electron (Vesktop)
-        if pw-cli info "$stream" 2>/dev/null | grep -q "application.process.binary.*electron"; then
-            echo "$stream"
-            break
-        fi
-    done
-)
+# Find ALL Vesktop sink-input IDs
+# Vesktop runs as Electron and may have multiple streams, control all of them
+SINK_INPUTS=()
+for stream in $(wpctl status | grep -A 50 "Streams:" | grep -oP '^\s*\K\d+(?=\.)'); do
+    # Check if this stream belongs to electron (Vesktop)
+    if pw-cli info "$stream" 2>/dev/null | grep -q "application.process.binary.*electron"; then
+        SINK_INPUTS+=("$stream")
+    fi
+done
 
-if [ -z "$SINK_INPUT" ]; then
+if [ ${#SINK_INPUTS[@]} -eq 0 ]; then
     notify-send "Vesktop Volume" "Vesktop not found (make sure it's playing audio)" -t 2000
     exit 1
 fi
 
 case "$ACTION" in
     up)
-        wpctl set-volume -l 1.0 "$SINK_INPUT" 5%+
-        VOLUME=$(wpctl get-volume "$SINK_INPUT" | awk '{print int($2 * 100)}')
+        for SINK_INPUT in "${SINK_INPUTS[@]}"; do
+            wpctl set-volume -l 1.0 "$SINK_INPUT" 5%+
+        done
+        # Get volume from first stream for display
+        VOLUME=$(wpctl get-volume "${SINK_INPUTS[0]}" | awk '{print int($2 * 100)}')
         notify-send "Vesktop Volume" "Volume: ${VOLUME}%" -t 1000
         ;;
     down)
-        wpctl set-volume "$SINK_INPUT" 5%-
-        VOLUME=$(wpctl get-volume "$SINK_INPUT" | awk '{print int($2 * 100)}')
+        for SINK_INPUT in "${SINK_INPUTS[@]}"; do
+            wpctl set-volume "$SINK_INPUT" 5%-
+        done
+        # Get volume from first stream for display
+        VOLUME=$(wpctl get-volume "${SINK_INPUTS[0]}" | awk '{print int($2 * 100)}')
         notify-send "Vesktop Volume" "Volume: ${VOLUME}%" -t 1000
         ;;
     mute)
-        wpctl set-mute "$SINK_INPUT" toggle
-        MUTED=$(wpctl get-volume "$SINK_INPUT" | grep -q "MUTED" && echo "Muted" || echo "Unmuted")
+        for SINK_INPUT in "${SINK_INPUTS[@]}"; do
+            wpctl set-mute "$SINK_INPUT" toggle
+        done
+        # Get mute status from first stream for display
+        MUTED=$(wpctl get-volume "${SINK_INPUTS[0]}" | grep -q "MUTED" && echo "Muted" || echo "Unmuted")
         notify-send "Vesktop Volume" "$MUTED" -t 1000
         ;;
     *)
