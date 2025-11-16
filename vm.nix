@@ -54,6 +54,16 @@
   # Enable niri/Hyprland without nvidia
   programs.hyprland.enable = true;
 
+  # Disable display managers to avoid conflicts (use auto-login instead)
+  services.displayManager.ly.enable = lib.mkForce false;
+  services.xserver.displayManager.gdm.enable = lib.mkForce false;
+
+  # Auto-login for VM testing
+  services.displayManager.autoLogin = {
+    enable = true;
+    user = "qreenify";
+  };
+
   # Basic services
   services.pipewire = {
     enable = true;
@@ -62,11 +72,7 @@
   };
 
   # Enable X11 and Wayland
-  services.xserver = {
-    enable = true;
-    displayManager.gdm.enable = true;
-    displayManager.gdm.wayland = true;
-  };
+  services.xserver.enable = true;
 
   system.stateVersion = "25.05";
 }
