@@ -25,7 +25,7 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   # Basic system settings
-  networking.hostName = "nixos-vm";
+  networking.hostName = lib.mkForce "nixos-vm";  # Override main config hostname
   networking.networkmanager.enable = true;
 
   # Time zone and locale
