@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Control YouTube (PWA) volume specifically (cache-based, instant)
+# Fast YouTube volume control using wpctl with cache
 
-ACTION="$1"  # up, down, or mute
+ACTION="$1"
 CACHE_FILE="/tmp/app-volume-cache-$USER/youtube"
 
 # Read stream IDs from cache
@@ -12,31 +12,28 @@ if [[ -f "$CACHE_FILE" ]]; then
     done < "$CACHE_FILE"
 fi
 
-if [ ${#SINK_INPUTS[@]} -eq 0 ]; then
-    exit 1
-fi
+[[ ${#SINK_INPUTS[@]} -eq 0 ]] && exit 1
 
+# Direct wpctl calls - optimized for speed
 case "$ACTION" in
     up)
-        for SINK_INPUT in "${SINK_INPUTS[@]}"; do
-            wpctl set-volume -l 1.0 "$SINK_INPUT" 5%+
+        for id in "${SINK_INPUTS[@]}"; do
+            wpctl set-volume -l 1.0 "$id" 5%+
         done
         ;;
     down)
-        for SINK_INPUT in "${SINK_INPUTS[@]}"; do
-            wpctl set-volume "$SINK_INPUT" 5%-
+        for id in "${SINK_INPUTS[@]}"; do
+            wpctl set-volume "$id" 5%-
         done
         ;;
     mute)
-        for SINK_INPUT in "${SINK_INPUTS[@]}"; do
-            wpctl set-mute "$SINK_INPUT" toggle
+        for id in "${SINK_INPUTS[@]}"; do
+            wpctl set-mute "$id" toggle
         done
         ;;
     *)
-        echo "Usage: $0 {up|down|mute}"
         exit 1
         ;;
 esac
 
-# Signal waybar to update immediately
 pkill -RTMIN+8 waybar 2>/dev/null

@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Control Vesktop (Discord) volume specifically (cache-based, instant)
+# Fast Vesktop volume control using wpctl with cache
 
-ACTION="$1"  # up, down, or mute
+ACTION="$1"
 CACHE_FILE="/tmp/app-volume-cache-$USER/vesktop"
 
-# Read stream IDs from cache
+# Read stream IDs from cache (one ID per line)
 SINK_INPUTS=()
 if [[ -f "$CACHE_FILE" ]]; then
     while IFS= read -r stream_id; do
@@ -12,32 +12,30 @@ if [[ -f "$CACHE_FILE" ]]; then
     done < "$CACHE_FILE"
 fi
 
-if [ ${#SINK_INPUTS[@]} -eq 0 ]; then
-    # Silently exit if app not found
-    exit 1
-fi
+# Exit silently if app not found
+[[ ${#SINK_INPUTS[@]} -eq 0 ]] && exit 1
 
+# Direct wpctl calls - no parsing, no subprocesses
 case "$ACTION" in
     up)
-        for SINK_INPUT in "${SINK_INPUTS[@]}"; do
-            wpctl set-volume -l 1.0 "$SINK_INPUT" 5%+
+        for id in "${SINK_INPUTS[@]}"; do
+            wpctl set-volume -l 1.0 "$id" 5%+
         done
         ;;
     down)
-        for SINK_INPUT in "${SINK_INPUTS[@]}"; do
-            wpctl set-volume "$SINK_INPUT" 5%-
+        for id in "${SINK_INPUTS[@]}"; do
+            wpctl set-volume "$id" 5%-
         done
         ;;
     mute)
-        for SINK_INPUT in "${SINK_INPUTS[@]}"; do
-            wpctl set-mute "$SINK_INPUT" toggle
+        for id in "${SINK_INPUTS[@]}"; do
+            wpctl set-mute "$id" toggle
         done
         ;;
     *)
-        echo "Usage: $0 {up|down|mute}"
         exit 1
         ;;
 esac
 
-# Signal waybar to update immediately
+# Signal waybar to update
 pkill -RTMIN+8 waybar 2>/dev/null
