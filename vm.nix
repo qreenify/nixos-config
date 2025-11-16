@@ -1,5 +1,5 @@
 # NixOS VM configuration for testing the flake
-{ config, pkgs, modulesPath, ... }:
+{ config, pkgs, lib, modulesPath, ... }:
 
 {
   imports = [
