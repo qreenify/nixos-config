@@ -63,12 +63,19 @@
         ./modules/packages.nix
         ./modules/desktop.nix
 
-        # Home Manager
+        # Home Manager (simplified for VM)
         home-manager.nixosModules.home-manager
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
-          home-manager.users.qreenify = import ./modules/home.nix;
+          home-manager.users.qreenify = { config, pkgs, lib, ... }: {
+            # Import main home config
+            imports = [ ./modules/home.nix ];
+
+            # Disable theme deployment in VM (causes path issues)
+            home.file.".config/theme/themes/pulsar-theme".enable = lib.mkForce false;
+            home.file.".config/theme/themes/base".enable = lib.mkForce false;
+          };
         }
       ];
     };
